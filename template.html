@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Groundwater Information Center</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/nihilo/nihilo.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
+    <link rel="stylesheet" href="css/template.css"/>
+  </head>
+   
+
+      <body class="nihilo">
+        
+           <div data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design:'sidebar', gutters:true, liveSplitters:true" id="borderContainer">
+
+                               
+                          
+
+                  
+           <div id="leftPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left'" >
+                          <div id=leftPaneHeader align="center" >  Groundwater Information Center Map Interface           
+                               <p id=headingDescrip align="center">Groundwater Information Center Desription of Interactive Map Capabilities</p>
+                          </div>
+                   <div data-dojo-type="dijit/layout/AccordionContainer" data-dojo-props="region:'center'"id="leftAccordion">
+     						
+ 
+ 
+                           <div id="pane1" data-dojo-type="dijit/layout/AccordionPane" title="Boundaries" selected="true">
+                                  
+  										
+                                     	
+                                          <div><input type='checkbox' class='list_item' id='layer0CheckBox' value=0 />County Boundaries </div>                                    
+                                          <div id=boundaryLeg><img src="images/countyBoundary_Leg.PNG" ></div>
+                                          <br>
+                                          <div><input type='checkbox' class='list_item' id='layer1CheckBox' value=1 />Groundwater Basins</div>                                           
+                                          <div id=boundaryLeg><img src="images/Bulletin118GWbasins.PNG" ></div>
+                                          <br>
+                                          <div><input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />GWMP Statewide</div>                                           
+                                          <div id=boundaryLeg><img src="images/GWMP_Statewide.PNG" ></div>
+                                          <br>
+                                          <div><input type='checkbox' class='list_item' id='layer3CheckBox' value=3 />Basin Priorty Rank</div> 
+           								  <div id=boundaryLeg><img src="images/basinPriorityRank.PNG" ></div>
+        											
+                         </div>
+                            
+                         <div id="pane2" data-dojo-type="dijit/layout/AccordionPane" title="Groundwater Level Measurements">
+								        
+                                        
+                                       <!-- <div id="info3" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" title="Well Data" >
+                                            <div id="timeInfo">
+                                              <div>Groundwater Well Info  1990 to 2014</div>
+                                              <div id="timeSliderDiv"></div>
+                                    	    </div>
+                                    
+                                       </div>-->                                                                                                                
+           
+                                                    <span><input id="measurementSelectSeason" class="combobox"> <input id="measurementSelectYr" class="combobox"></span>
+														
+                                                    <br>
+                                                    <br>
+                                                    <br>
+                                                  <form>
+                                        					<input type="radio"  id="radio1" name="depthselector" >
+                                                    <label for="radio1">Depth Below Ground</label><br/>
+                                                  <input type="radio"  id="radio2" checked name="depthselector">
+                                                    <label for="radio2">Groundwater Elevation</label>
+                                                </form>
+                                                    <br>
+                                                    <br>
+                                                    <br>             
+                                        			Layer List: <span class="layer_list" id = "measurementLayers">
+                                                              <div><input type='checkbox' class='list_item' id='measurementMeasurement' value=0 />Measurements</div> 
+                                                              <div><input type='checkbox' class='list_item' id='measurementContours' value=1 />Contours</div> 
+                                                              <div><input type='checkbox' class='list_item' id='measurementRamp' value=2 />Color Ramp</div>                                                    
+        											</span>
+                                       
+                         </div> 
+                         
+                         <div id="pane3" data-dojo-type="dijit/layout/AccordionPane" title="Groundwater Level Change">           
+                                                                                                                                                                          
+                                                    <span><input id="changeSelectYr" class="combobox">  <input id="changeSelectCP" class="combobox"></span>
+                                         		    <br>   
+                                                	<br>
+                                                    <br>
+                                                    <br>
+                                            Layer List : <span class="layer_list" id="changeLayers">
+                                                              <div><input type='checkbox' class='list_item' id='changeMeasurement' value=0 />Measurements</div> 
+                                                              <div><input type='checkbox' class='list_item' id='changeContours' value=1 />Contours</div> 
+                                                              <div><input type='checkbox' class='list_item' id='changeRamp' value=2 />Color Ramp</div>                                                      
+        											</span>  
+                                                  <br>
+                                                  <br>
+                                                     
+                         </div>   
+                			
+                            
+                               
+                    
+                         <div id="pane4" data-dojo-type="dijit/layout/AccordionPane" title="Other Data">
+                                  <div id="Header" align="center" > Depth to Groundwater Data </div>
+                                  <br>     
+                                       
+                                          <div><input type='checkbox' class='listB_item' id='layerB0CheckBox' value=0 />CA DOGGR Data </div>                                    
+                                          <div id=boundaryLeg><img src="images/CA_DOGGER.PNG"></div>
+                                       	  <div><input type='checkbox' class='listB_item' id='layerB1CheckBox' value=1 />Water Resource Data </div>                                    
+                                          <div id=boundaryLeg><img src="images/WR_Data.PNG"></div>
+                                          <div><input type='checkbox' class='listB_item' id='layerB2CheckBox' value=2 />BFW - BGS (ft)  </div>                                    
+                                          <div id=boundaryLeg><img src="images/Contour_BFW_BGS.PNG"></div>
+                                                                              
+                                          <div id=boundaryLeg><img src=></div>
+                                                                             
+                                          <div id=boundaryLeg><img src="images/Elev_BFG_BGS.PNG"></div>
+                                          <div><input type='checkbox' class='listB_item' id='layerB5CheckBox' value=5 />BFW - MSL (ft)  </div>                                                                                                                               
+                                          <div id=boundaryLeg><img src="images/Contour_BFW_MSL.PNG"></div>
+                                          <div id=boundaryLeg><img src="images/Elev_BFG_MSL.PNG"></div>
+                                          	
+                                                
+                                       		
+                                       
+                                       
+                         </div>	
+                </div>
+   		  </div>
+          
+          <div id="centerPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+                <div id="basemapToggle"></div>
+                <div id="infoWindow"></div>
+                <div id="measureAnchor" class="atop" title="Make map measurements."></div>
+                <div id="homeButton"></div>
+              </div>
+  
+
+					
+       
+    </div><!-- end borderContainer -->
+          
+          <script data-dojo-config="async:1" src="http://js.arcgis.com/3.8/init.js"></script>
+          <script async src="js/template.js"></script>
+          
+      </body>
+
+
+</html>
