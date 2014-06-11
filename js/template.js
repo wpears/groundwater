@@ -614,10 +614,18 @@ map.addLayers(layers);
     var list = "<ul>";
     for (var key in attributes){
       if(attributes.hasOwnProperty(key))
-        list+= "<li><strong>"+key+"</strong>: "+attributes[key]+"</li>"
+        list+= "<li><strong>"+key+"</strong>: "+getAttributeHTML(attributes[key])+"</li>"
     }
     list +="</ul>"
     return list;
+  }
+
+  function getAttributeHTML(value){
+    var reg = /https?|ftp:\/\//;
+    if(reg.test(value))
+      return '<a target="_blank" href="'+value+'">'+value+'</a>'
+    else
+      return value;
   }
 
   function setInfoPoint(event){
