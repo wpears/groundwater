@@ -125,7 +125,7 @@ esri.config.defaults.io.corsDetection = false;
   var infoWindow = new InfoWindow('infoWindow');
   infoWindow.startup();
   infoWindow.setTitle('<a id="zoomLink" action="javascript:void(0)">Information at this Point</a>')
-
+window.iw=infoWindow;
   // Create the map. The first argument is either an HTML element (usually a div) or, as in this case,
   // the id of an HTML element as a string. See https://developers.arcgis.com/en/javascript/jsapi/map-amd.html#map1
   // for the full list of options that can be passed in the second argument.
@@ -151,7 +151,7 @@ esri.config.defaults.io.corsDetection = false;
   //unstyled content on the first point click. This is a bug in the API.
   
       map.on("load", function(){
-      infoWindow.resize(350,275);
+      infoWindow.resize(425,325);
       infoWindow.show(0,0);
       setTimeout(function(){infoWindow.hide()},0);
     });
@@ -173,7 +173,8 @@ esri.config.defaults.io.corsDetection = false;
       "pane1" : "Groundwater Boundaries",
       "pane2" : "Measurements of Depth Below Ground and Groundwater Elevation",
       "pane3" : "Groundwater Change",
-      "pane4" : "Base of Fresh Groundwater"
+      "pane4" : "Base of Fresh Groundwater",
+      "pane5" : "Subsidence"
     };
     function hookAccordion(){
       var acc = registry.byId("leftAccordion");
@@ -231,13 +232,14 @@ esri.config.defaults.io.corsDetection = false;
 
        
 
-
+// Building measurement Drop down combobox lists
 
 	
 	var measurementStoreYr = new Memory({
         data: [
             
-            {name:"2013", id:"0"}
+            {name:"2013", id:"0"},
+			 {name:"2014", id:"1"}
  
         ]
     });
@@ -270,7 +272,7 @@ esri.config.defaults.io.corsDetection = false;
 	
 	
 	
-	
+// Building Change Drop down combobox lists	
 	
 	var changeStoreYr = new Memory({
         data:[
@@ -315,13 +317,11 @@ esri.config.defaults.io.corsDetection = false;
 
 
 
-/*hook up query builder in left pane
- *
- *
- *
- *
- */
+//hook up query builder in left pane
 
+
+
+//Object that is searched to match layer ID in Groundwater Level Change Service
 var changeObj ={
 "2012 10 Year" :0,
 "2012 5 Year" : 1,
@@ -337,14 +337,25 @@ var changeObj ={
 "2014 1 Year" :11
 };
 
+
+//Object that is searched to match layer ID in Groundwater Level Measurements Service
 var measurementObj = {
-  "Spring 2013":"0" 
+  "Spring 2013":"0",
+  "Spring 2014":"1" 
   };
+
+
+
+//Set variables for queries in accordian panes
+
 
   var staticServices = {};
   var activeServices = [];
   var visibleServiceUrls = {};
   var identifyTasks = {};
+  //Use the ImageParameters to set the visibleLayerIds layers in the map service during ArcGISDynamicMapServiceLayer construction.
+  var imageParameters = new ImageParameters({layerIds:[-1],layerOption:ImageParameters.LAYER_OPTION_SHOW});
+  //layerOption can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
 
   var noLayers = [-1];
   var prefix = "http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_";
@@ -363,22 +374,24 @@ var measurementObj = {
     })
   })
 
+ 
+ //Checkbox controls for pane 1,4
          
-  //Use the ImageParameters to set the visibleLayerIds layers in the map service during ArcGISDynamicMapServiceLayer construction.
-  var imageParameters = new ImageParameters({layerIds:[-1],layerOption:ImageParameters.LAYER_OPTION_SHOW});
-  //layerOption can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
 
-  var boundaryUrl = "http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_Boundaries/MapServer";
-  var boundaryService = new ArcGISDynamicMapServiceLayer(boundaryUrl, {"imageParameters": imageParameters});
-  boundaryService.suspend();
-  layers.push(boundaryService);
-  identifyTasks[boundaryUrl] = new IdentifyTask(boundaryUrl);
 
-  var bfwUrl = "http://mrsbmweb21157/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer";
-  var bfwService = new ArcGISDynamicMapServiceLayer(bfwUrl, {"imageParameters": imageParameters});
-  bfwService.suspend();
-  layers.push(bfwService);
-  identifyTasks[bfwUrl] = new IdentifyTask(bfwUrl);
+
+  function makeService(url, paneId){
+    var service = new ArcGISDynamicMapServiceLayer(url, {"imageParameters": imageParameters});
+    service.suspend();
+    layers.push(service);
+    identifyTasks[url] = new IdentifyTask(url);
+
+    on(query("#pane"+paneId+" input"), "change", function(){updateLayerVisibility(service,this.parentNode.parentNode)});
+  }
+
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", 1);
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", 4);
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer",5)
 
 
   function updateLayerVisibility (service,pane) {
@@ -391,7 +404,7 @@ var measurementObj = {
         visibleLayerIds.push(inputs[i].value);
         addLayerInfo(service,i)
       }else{
-        removeLayerInfo(service)
+        removeLayerInfo(service,i)
       }
     }
     if(visibleLayerIds.length === 1){
@@ -412,13 +425,10 @@ var measurementObj = {
   function removeVisibleUrl(url){
     visibleServiceUrls[url] = null;
   }
-
-
-
-  on(query("#pane1 input"), "change", function(){updateLayerVisibility(boundaryService,this.parentNode.parentNode)});
-  on(query("#pane4 input"), "change", function(){updateLayerVisibility(bfwService,this.parentNode.parentNode)});  
          
- 
+
+
+//Getting layer ID from combobox dropdown selections
 
 function getLayerId(layer,type){
   if(type === "Change")
@@ -428,7 +438,7 @@ function getLayerId(layer,type){
 
 function addLayerInfo(service,layerId){
   var info = service.layerInfos[layerId]
-  if(info.rpNode) return;
+  if(!info||info.rpNode) return;
 
   var node = DOC.createElement('div');
   info.rpNode = node;
@@ -437,8 +447,8 @@ function addLayerInfo(service,layerId){
 }
 
 function removeLayerInfo(service, layerId){
-  console.log(arguments)
   var info = service.layerInfos[layerId];
+  if(!info)return
   var node = info.rpNode;
   if(!node) return;
 
@@ -447,6 +457,7 @@ function removeLayerInfo(service, layerId){
 }
 
 
+//Query builder for Groundwater Level Change
 
 function changeQuery(){
   var type = "Change";
@@ -498,6 +509,10 @@ function getServicesFromChecks(checkedArray){
     })
 }
 
+
+
+
+//Query builder for Groundwater Level Measurements
 
 function measurementQuery(){
   var type = dom.byId("radio1").checked === true
@@ -562,10 +577,6 @@ map.addLayers(layers);
  */
 
 
-
-
-
-
   // Add dijits to the application
 
 
@@ -603,8 +614,21 @@ map.addLayers(layers);
                                  );   						 
 */
 
+ 
+ 
+ //Tabbed InfoWindow with Identify tool 
+ 
   var mdX = 0;
   var mdY = 0;
+
+  var tabs = new TabContainer({style:"height:100%;"},'infoTabContainer');
+  infoWindow.setContent(tabs.domNode)
+
+infoWindow.on('hide',function(){
+  infoWindow.resize(425,325)
+  tabs.resize();
+})
+
 
   map.on("mouse-down",function(e){
     mdX = e.x;
@@ -618,42 +642,28 @@ map.addLayers(layers);
   })
 
   function runIdentify(event){
+    infoWindow.show(event.screenPoint);
     identifyParameters.geometry = event.mapPoint;
     identifyParameters.mapExtent = map.extent;
     identifyParameters.width = map.width;
     identifyParameters.height = map.height;
-
-    infoWindow.setContent('<div id="infoTabContainer"></div>')
-    var tabs = new TabContainer({style:"height:100%;"},'infoTabContainer');
-    var executingTasks = 0;
-
-    function currentIdentify(results){
-      processIdentify(results,tabs,event)
-      executingTasks--;
-      if(executingTasks === 0){
-        infoWindow.setContent(tabs.domNode)
-        infoWindow.show(event.screenPoint)
-      }
-    }
+    tabs.getChildren().forEach(function(v){tabs.removeChild(v)});
 
     for(var taskUrl in identifyTasks){
       if(!visibleServiceUrls[taskUrl]) continue;
-      executingTasks++;
       identifyParameters.layerIds = visibleServiceUrls[taskUrl].visibleLayers;
-      identifyTasks[taskUrl].execute(identifyParameters,currentIdentify)
+      identifyTasks[taskUrl].execute(identifyParameters,processIdentify)
     }
-
-    
   }
 
-  function processIdentify (results,tabs){
+  function processIdentify (results){
     forEach(results,function(result){
       var tab = new ContentPane({
         content:makeContent(result.feature.attributes),
         title:result.layerName
       })
       tabs.addChild(tab);
-    })   
+    })
   }
 
   function makeContent(attributes){
@@ -667,11 +677,43 @@ map.addLayers(layers);
   }
 
   function getAttributeHTML(value){
-    var reg = /https?|ftp:\/\//;
-    if(reg.test(value))
+    var linkReg = /(?:^https?|^ftp):\/\//i;
+    var embeddedImg = /blank\.png/i;
+    var hydstraImg = /^<img.*hydstra/i;
+    if(linkReg.test(value))
       return '<a target="_blank" href="'+value+'">'+value+'</a>'
+    else if(embeddedImg.test(value))
+      return makeEmbedded(value,1);
+    else if(hydstraImg.test(value))
+      return makeEmbedded(value,0);
     else
       return value;
+  }
+
+  function makeEmbedded(value,backgroundImg){
+    var urlReg;
+    var width;
+    var height;
+    if(backgroundImg){
+      urlReg = /url\((.*?)\)/;
+      width = 600;
+      height = 400;
+    }else{
+      urlReg = /src=['"](.*?)['"]/;
+      width = 612;
+      height = 500;
+    }
+
+    var url = urlReg.exec(value)[1];
+    if(!backgroundImg){
+      value = value.slice(0,5)+'style="width:512px;height:384px;" '+value.slice(5);
+    }
+    setTimeout(function(){
+    infoWindow.resize(width,height);
+    tabs.resize();
+  },0)
+
+    return '<a target="_blank" href="'+url+'">'+value+'</a>'
   }
 
   function setInfoPoint(event){
