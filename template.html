@@ -125,15 +125,22 @@
           <div id="centerPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
                 <div id="basemapToggle"></div>
                 <div id="infoWindow"></div>
-                <div id="measureAnchor" class="atop" title="Make map measurements."></div>
+                <!--div id="measureAnchor" class="atop" title="Make map measurements."></div-->
                 <div id="homeButton"></div>
               </div>
-  
-
-					
-       
+    <div id="rp" class="mov atop">
+      <div id="dataCon">
+        <div id="tabNode"></div>
+        <div id="layerNode"></div>
+      </div>
+    </div>
+    <div id="closeRP"class="mov atop unselectable">
+      <div id="arro"></div>
+    </div>
+ 
     </div><!-- end borderContainer -->
-          
+
+      
           <script data-dojo-config="async:1" src="http://js.arcgis.com/3.8/init.js"></script>
           <script async src="js/template.js"></script>
           

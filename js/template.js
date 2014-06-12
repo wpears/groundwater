@@ -14,12 +14,14 @@ require([
   "esri/TimeExtent", 
   "esri/dijit/TimeSlider",
   "esri/layers/ImageParameters",
+  "dijit/registry",
   
   "dojo/ready",
   "dojo/_base/Color",
   "dojo/parser",
   "dojo/on",
   "dojo/dom",
+  "dojo/dom-class",
   "dojo/query",
   "dojo/store/Memory", 
   "dijit/form/ComboBox",
@@ -35,7 +37,9 @@ require([
 
   "esri/tasks/identify",
   "esri/tasks/IdentifyTask",
-  "esri/tasks/IdentifyParameters"
+  "esri/tasks/IdentifyParameters",
+
+  "require"
   ], 
 
 function(
@@ -50,12 +54,14 @@ function(
    TimeExtent, 
    TimeSlider,
    ImageParameters,
+   registry,
 
    ready,
    Color,
    parser,
    on,
    dom,
+   domClass,
    query,
    Memory,
    ComboBox,
@@ -71,7 +77,8 @@ function(
 
    identify,
    IdentifyTask,
-   IdentifyParameters
+   IdentifyParameters,
+   require
    ){
 
 //Disable CORS detection, since services.arcgisonline.com is not CORS enabled
@@ -80,28 +87,36 @@ esri.config.defaults.io.corsDetection = false;
 
   // Fires when the DOM is ready and all dependencies are resolved. Usually needed when using dijits.
   ready(function() {
-    var layers = []
-      , measureAnchor = document.getElementById('measureAnchor')
-      ;
+    var W = window;
+    var DOC = document;
+    var layers = [];
+    var movers = query(".mov");
+    var rp = dom.byId('rp');
+    var tabNode = dom.byId('tabNode');
+    var layerNode = dom.byId('layerNode');
+    var closeButton = dom.byId('closeRP');
+    var arro = dom.byId("arro");
+    var showing = 0;
+    var ie9 =(DOC.all&&DOC.addEventListener&&!W.atob)?true:false;
+    
 
-
+    if(ie9) fx = require("dojo/_base/fx", function(fx){return fx});
   // Parse widgets included in the HTML. In this case, the BorderContainer and ContentPane.
   // data-dojo -types and -props get analyzed to initialize the application properly.
-    parser.parse();
+    parser.parse().then(hookAccordion);
 
 
   // Choose your initial extent. The easiest way to find this is to pan around the map, checking the
   // current extent with 'esri.map.extent' in the Javascript console (F12 to open it)
     var initialExtent = new Extent({
-	  xmin : -13500000,
+	  xmin : -13300000,
       ymin : 3500000,
-      xmax : -13500000,
+      xmax : -12800000,
       ymax : 5500000, 
 	  spatialReference:{
         wkid : 102100
       }
     });
-
 
 	
 	
@@ -154,9 +169,20 @@ esri.config.defaults.io.corsDetection = false;
     identifyParameters.tolerance = 2;
     identifyParameters.returnGeometry = false;
 
-
-
-
+    var accordionTabs = {
+      "pane1" : "Groundwater Boundaries",
+      "pane2" : "Measurements of Depth Below Ground and Groundwater Elevation",
+      "pane3" : "Groundwater Change",
+      "pane4" : "Base of Fresh Groundwater"
+    };
+    function hookAccordion(){
+      var acc = registry.byId("leftAccordion");
+      function populate(e){
+        tabNode.innerHTML = accordionTabs[acc.selectedChildWidget.id]
+      }
+      on(acc.domNode,".dijitAccordionTitle:click",populate);
+      populate();
+    }
   // Dynamic map services allow you to bring in all the layers of a map service at once. These are rendered
   // by the server on the fly into map tiles and served out to the user. This is somewhat slower than serving
   // a cached map, but is needed for maps/data that are often updated or that needs to be queried/updated
@@ -343,19 +369,19 @@ var measurementObj = {
   //layerOption can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
 
   var boundaryUrl = "http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_Boundaries/MapServer";
-  var boundaryLayer = new ArcGISDynamicMapServiceLayer(boundaryUrl, {"imageParameters": imageParameters});
-  boundaryLayer.suspend();
-  layers.push(boundaryLayer);
+  var boundaryService = new ArcGISDynamicMapServiceLayer(boundaryUrl, {"imageParameters": imageParameters});
+  boundaryService.suspend();
+  layers.push(boundaryService);
   identifyTasks[boundaryUrl] = new IdentifyTask(boundaryUrl);
 
   var bfwUrl = "http://mrsbmweb21157/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer";
-  var bfwLayer = new ArcGISDynamicMapServiceLayer(bfwUrl, {"imageParameters": imageParameters});
-  bfwLayer.suspend();
-  layers.push(bfwLayer);
+  var bfwService = new ArcGISDynamicMapServiceLayer(bfwUrl, {"imageParameters": imageParameters});
+  bfwService.suspend();
+  layers.push(bfwService);
   identifyTasks[bfwUrl] = new IdentifyTask(bfwUrl);
 
 
-  function updateLayerVisibility (layer,pane) {
+  function updateLayerVisibility (service,pane) {
     var inputs = query("input",pane);
     var inputCount = inputs.length;
     var visibleLayerIds = [-1]
@@ -363,16 +389,19 @@ var measurementObj = {
     for (var i = 0; i < inputCount; i++) {
       if (inputs[i].checked) {
         visibleLayerIds.push(inputs[i].value);
+        addLayerInfo(service,i)
+      }else{
+        removeLayerInfo(service)
       }
     }
     if(visibleLayerIds.length === 1){
-      layer.suspend();
-      removeVisibleUrl(layer.url);
+      service.suspend();
+      removeVisibleUrl(service.url);
     }else{
-      layer.resume();
-      addVisibleUrl(layer.url,layer)
+      service.resume();
+      addVisibleUrl(service.url,service)
     }
-    layer.setVisibleLayers(visibleLayerIds);
+    service.setVisibleLayers(visibleLayerIds);
   }
 
 
@@ -386,36 +415,55 @@ var measurementObj = {
 
 
 
-  on(query("#pane1 input"), "change", function(){updateLayerVisibility(boundaryLayer,this.parentNode.parentNode)});
-  on(query("#pane4 input"), "change", function(){updateLayerVisibility(bfwLayer,this.parentNode.parentNode)});  
+  on(query("#pane1 input"), "change", function(){updateLayerVisibility(boundaryService,this.parentNode.parentNode)});
+  on(query("#pane4 input"), "change", function(){updateLayerVisibility(bfwService,this.parentNode.parentNode)});  
          
  
 
 function getLayerId(layer,type){
-  console.log(layer)
   if(type === "Change")
     return changeObj[layer];
   return measurementObj[layer];
 }
 
+function addLayerInfo(service,layerId){
+  var info = service.layerInfos[layerId]
+  if(info.rpNode) return;
 
+  var node = DOC.createElement('div');
+  info.rpNode = node;
+  node.innerHTML = info.name;
+  layerNode.appendChild(node);
+}
+
+function removeLayerInfo(service, layerId){
+  console.log(arguments)
+  var info = service.layerInfos[layerId];
+  var node = info.rpNode;
+  if(!node) return;
+
+  layerNode.removeChild(node);
+  info.rpNode = null;
+}
 
 
 
 function changeQuery(){
-  clearActiveServices();
-
   var type = "Change";
-  var services = getCheckedServices("#changeLayers input");
+  var checkedServices = getCheckedServices("#changeLayers input");
   var changelayerId = getLayerId(dom.byId("changeSelectYr").value +" "+ dom.byId("changeSelectCP").value,type);
 
-  showLayers(type,services,changelayerId) 
+  toggleLayers(type,checkedServices,changelayerId) 
 }
 
 
-function showLayers(type,services,layerId){
-  services.forEach(function(name){
-    showLayer(type+name,layerId)
+function toggleLayers(type,checkedServices,layerId){
+  var services = getServicesFromChecks(checkedServices);
+  services.forEach(function(name,i){
+    if(checkedServices[i])
+      showLayer(type+name,layerId)
+    else
+      hideLayer(type+name,layerId)
   })
 }
 
@@ -424,44 +472,42 @@ function showLayer(serviceName,layerId){
   var service = staticServices[serviceName];
   service.resume();
   service.setVisibleLayers([layerId])
-  activeServices.push(service);
+  addLayerInfo(service,layerId)
   addVisibleUrl(service.url,service)
 
 }
 
-function clearActiveServices(){
-  while (activeServices.length){
-    var service = activeServices.pop();
-    service.setVisibleLayers(noLayers);
-    service.suspend();
-    removeVisibleUrl(service.url)
-  }
+function hideLayer(serviceName,layerId){
+  var service = staticServices[serviceName];
+  service.setVisibleLayers(noLayers)
+  service.suspend();
+  removeLayerInfo(service,layerId)
+  removeVisibleUrl(service.url);
+
 }
 
 function getCheckedServices(queryString){
   return query(queryString).map(function(node,i){
-    if (node.checked){
-        return serviceNames[serviceNames.length-i-1]
-    }
-    return null;
-  }).filter(function(val){
-    return val !== null;
+    return node.checked
   });
+}
+
+function getServicesFromChecks(checkedArray){
+  return checkedArray.map(function(checked,i){
+        return serviceNames[serviceNames.length-i-1]
+    })
 }
 
 
 function measurementQuery(){
-  clearActiveServices();
-
   var type = dom.byId("radio1").checked === true
            ? "Depth"
            : "Elevation"
            ;
-  var services = getCheckedServices("#measurementLayers input");
-  
-  var measurementlayerId =  dom.byId("measurementSelectSeason").value+" "+dom.byId("measurementSelectYr").value ;
+  var checkedServices = getCheckedServices("#measurementLayers input");
+  var measurementlayerId =  getLayerId(dom.byId("measurementSelectSeason").value+" "+dom.byId("measurementSelectYr").value);
  
-  showLayers(type,services,measurementlayerId) 
+  toggleLayers(type,checkedServices,measurementlayerId) 
 }
 
 
@@ -631,34 +677,52 @@ map.addLayers(layers);
   function setInfoPoint(event){
     if(infoWindow.zoomHandler)
       infoWindow.zoomHandler.remove();
-    infoWindow.zoomHandler = on(document.getElementById('zoomLink'),'click',function(){
+    infoWindow.zoomHandler = on(DOC.getElementById('zoomLink'),'click',function(){
       map.centerAndZoom(event.mapPoint,12)
     });
   }
 
 
+  function showPane(){
+    var i = 0, j = movers.length;
+    showing = 1;
+    arro.style.backgroundPosition = "-32px -16px";
+    if(ie9){
+      for(;i<j;i++){
+        if(movers[i] === dataPane)
+          fx.animateProperty({node:movers[i], duration:300, properties:{marginRight:0}}).play();
+        else fx.animateProperty({node:movers[i], duration:300, properties:{marginRight:285}}).play();
+      }
+    }else{
+      for(;i<j;i++)
+        domClass.add(movers[i],"movd");
+    }
+  }
 
-   /* on( bfwLayer,"click", function(e){
-      
-        title = '<a id="zoomLink" action="javascript:void(0)">Earthquake ' + attr.eqid+'</a>'
-        , content ='<ul class="poplist">'+
-                    '<li><span class="poptitle">Date:&nbsp;</span>'+Hello+'</li>'+
-                   '</ul>';          
-      infoWindow.setTitle(title);
-      infoWindow.setContent(content);
-      infoWindow.show(e.screenPoint);
-
-      if(infoWindow.zoomHandler)
-        infoWindow.zoomHandler.remove();
-      infoWindow.zoomHandler = on(document.getElementById('zoomLink'),'click',function(){
-        map.centerAndZoom(e.mapPoint,12)
-      });     
-    });
-
-*/
+  function hidePane(){
+    var i = 0, j = movers.length;
+    showing = 0;
+    arro.style.backgroundPosition = "-96px -16px";
+    if(ie9){
+      for(;i<j;i++){
+      if(movers[i] === dataPane)
+        fx.animateProperty({node:movers[i], duration:250, properties:{marginRight:-285}}).play();
+      else fx.animateProperty({node:movers[i], duration:250, properties:{marginRight:0}}).play();
+      }
+    }else{
+      for(;i<j;i++)
+        domClass.remove(movers[i],"movd");
+    }
+  }
 
 
+  function closeToggle(){
+    if(showing) hidePane();
+    else showPane();
+  }
 
+  on(closeButton,"mousedown", closeToggle);
+//  W.setTimeout(showPane,300);
 
 
 
