@@ -357,6 +357,12 @@ var measurementObj = {
   var imageParameters = new ImageParameters({layerIds:[-1],layerOption:ImageParameters.LAYER_OPTION_SHOW});
   //layerOption can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
 
+
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", 1);
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", 4);
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer",5)
+
+
   var noLayers = [-1];
   var prefix = "http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_";
   var suffix = "/MapServer";
@@ -389,9 +395,7 @@ var measurementObj = {
     on(query("#pane"+paneId+" input"), "change", function(){updateLayerVisibility(service,this.parentNode.parentNode)});
   }
 
-  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", 1);
-  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", 4);
-  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer",5)
+
 
 
   function updateLayerVisibility (service,pane) {
@@ -657,10 +661,11 @@ infoWindow.on('hide',function(){
   }
 
   function processIdentify (results){
+    console.log(results)
     forEach(results,function(result){
       var tab = new ContentPane({
         content:makeContent(result.feature.attributes),
-        title:result.layerName
+        title:makeSpaced(result.layerName)
       })
       tabs.addChild(tab);
     })
@@ -669,8 +674,10 @@ infoWindow.on('hide',function(){
   function makeContent(attributes){
     var list = "<ul>";
     for (var key in attributes){
-      if(attributes.hasOwnProperty(key))
-        list+= "<li><strong>"+key+"</strong>: "+getAttributeHTML(attributes[key])+"</li>"
+      if(attributes.hasOwnProperty(key)&&key!=="OBJECTID"&&key!=="Shape"&&key!=="Shape_Area"&&key!=="Shape_Length"){
+        var spaced = makeSpaced(key)
+        list+= "<li><strong>"+spaced+"</strong>: "+getAttributeHTML(attributes[key])+"</li>"
+      }
     }
     list +="</ul>"
     return list;
@@ -688,6 +695,10 @@ infoWindow.on('hide',function(){
       return makeEmbedded(value,0);
     else
       return value;
+  }
+
+  function makeSpaced(name){
+    return name.replace(/_/g," ")
   }
 
   function makeEmbedded(value,backgroundImg){
