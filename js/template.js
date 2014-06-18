@@ -103,8 +103,7 @@ esri.config.defaults.io.corsDetection = false;
     if(ie9) fx = require("dojo/_base/fx", function(fx){return fx});
   // Parse widgets included in the HTML. In this case, the BorderContainer and ContentPane.
   // data-dojo -types and -props get analyzed to initialize the application properly.
-    parser.parse().then(hookAccordion);
-
+    parser.parse().then(hookRightPane);
 
   // Choose your initial extent. The easiest way to find this is to pan around the map, checking the
   // current extent with 'esri.map.extent' in the Javascript console (F12 to open it)
@@ -136,7 +135,7 @@ window.iw=infoWindow;
 	    extent:initialExtent,
       infoWindow:infoWindow,
       minZoom:6,
-	    maxZoom:14,
+	    maxZoom:12,
 	
     });
             
@@ -170,66 +169,19 @@ window.iw=infoWindow;
     identifyParameters.returnGeometry = false;
 
     var accordionTabs = {
-      "pane1" : "Groundwater Boundaries",
-      "pane2" : "Measurements of Depth Below Ground and Groundwater Elevation",
-      "pane3" : "Groundwater Change",
-      "pane4" : "Base of Fresh Groundwater",
-      "pane5" : "Subsidence"
+      "pane1" : "Measurements of Depth Below Ground and Groundwater Elevation, and Groundwater Change",
+      "pane2" : "Base of Fresh Groundwater",
+      "pane3" : "Subsidence"
     };
-    function hookAccordion(){
+    function hookRightPane(){
       var acc = registry.byId("leftAccordion");
       function populate(e){
         tabNode.innerHTML = accordionTabs[acc.selectedChildWidget.id]
       }
       on(acc.domNode,".dijitAccordionTitle:click",populate);
       populate();
+      DOC.body.style.visibility="visible";
     }
-  // Dynamic map services allow you to bring in all the layers of a map service at once. These are rendered
-  // by the server on the fly into map tiles and served out to the user. This is somewhat slower than serving
-  // a cached map, but is needed for maps/data that are often updated or that needs to be queried/updated
-  // dynamically (e.g., with a definition query). It is also much easier to use a dynamic map service when
-  // creating and testing an application, then converting it to a cached service in production, then recaching
-  // every time you need to alter the service.
-
-  //Uncomment this code to include the layer.
- /*   var dynamicUrl = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer";
-  * var lyrUSA = new ArcGISDynamicMapServiceLayer(dynamicUrl, {
-  *       opacity : 0.5
-  *     });
-  * layers.push(lyrUSA);
-  */
-
-/*   var dynamicUrl = "http://mrsbmapp00727/arcgis/rest/services/cadre/everything/MapServer/0";
- *  var lyrUSA = new ArcGISDynamicMapServiceLayer(dynamicUrl, {
-  *      opacity : 0.5
-  *    });
-  * layers.push(lyrUSA);
-  */
-
-
-  // Feature layers are likely the best way to interact with individual datasets of any size.
-  // A feature layer points to a layer in a map service and pulls data into the browser where it can be
-  // queried on/selected/edited without incurring a roundtrip to the server (hundreds of times slower).
-  // Supports three feature request modes:
-  // Snapshot: when you have AT MOST a few hundred features. Pulls all the data into your map, requiring
-  //           no server requests for pans and zooms. Fast, but will slow you down if you have too many features
-  // On Demand: the default mode. Only gets data when needed, i.e. if it is in the current extent and 
-  //           current time extent. Allows your service to contain thousands of features when zoomed in,
-  //           which are loaded when they are panned/zoomed to.
-  // Selection: Allows retrieval of data only when items are selected.
-  //
-  // Also, allows maxAllowableOffset to be set, allowing your line and polygon features to be generalized
-  // on the fly. This is often a huge performance benefit, especially if you have many detailed lines or polygons.
-   /* var featureUrl ="http://mrsbmapp00727/arcgis/rest/services/cadre/everything/MapServer/0";
-    var lyrEverything = new FeatureLayer(featureUrl,
-      {
-        mode:FeatureLayer.MODE_SNAPSHOT,
-        outFields:['*']
-      });
-
-    layers.push(lyrEverything);
-*/
-
        
 
 // Building measurement Drop down combobox lists
@@ -237,35 +189,32 @@ window.iw=infoWindow;
 	
 	var measurementStoreYr = new Memory({
         data: [
-            
             {name:"2013", id:"0"},
-			 {name:"2014", id:"1"}
- 
-        ]
+            {name:"2014", id:"1"}]
     });
 
-    var measurementComboSeason = new ComboBox({
-        id: "measurementSelectSeason",      
+    var levelComboSeason = new ComboBox({
+        id: "selectSeason",      
 	      name: "Season",
-        style:{width: "140px"},
+        style:{width: "135px"},
 		    value: "Spring",
         store: measurementStoreSeason,
         searchAttr: "name"
-    }, "measurementSelectSeason");
+    }, "selectSeason");
 	
 	var measurementStoreSeason = new Memory({
         data: [
             {name:"Spring", id:"0"}
         ]
     });
-    var measurementComboYr = new ComboBox({
-        id: "measurementSelectYr",
+    var levelComboYr = new ComboBox({
+        id: "selectYear",
 		    name: "Year",
-        style:{width: "140px"},
+        style:{width: "135px"},
 		    value: "2013",
         store: measurementStoreYr,
         searchAttr: "name"
-    }, "measurementSelectYr");
+    }, "selectYear");
 	
 	
 	
@@ -274,27 +223,10 @@ window.iw=infoWindow;
 	
 // Building Change Drop down combobox lists	
 	
-	var changeStoreYr = new Memory({
-        data:[
-            {name:"2014", id:"0"},
-            {name:"2013", id:"1"},
-            {name:"2012", id:"2"}
-        ]
-    });
+	var changeStoreYr = measurementStoreYr
 
-    var changeComboYr= new ComboBox({
-        id: "changeSelectYr",
-        name: "Year",
-        style:{width: "140px"},
-		
-		value: "2014",
-        store: changeStoreYr,
-        searchAttr: "name"
-    }, "changeSelectYr");
-  
 	
-	
-	var changeStoreCP = new Memory({
+	var levelStoreSpan= new Memory({
         data:[
             {name:"1 Year", id:"0"},
             {name:"3 Year", id:"1"},
@@ -303,15 +235,14 @@ window.iw=infoWindow;
         ]
     });
 
-    var changeComboCP= new ComboBox({
-        id: "changeSelectCP",
+    var levelComboSpan= new ComboBox({
+        id: "selectSpan",
         name: "Comparison Period",
         style:{width: "140px"},
-		
-		value: "1 Year",
-        store: changeStoreCP,
+		    value: "1 Year",
+        store: levelStoreSpan,
         searchAttr: "name"
-    }, "changeSelectCP");
+    }, "selectSpan");
   
   
 
@@ -323,18 +254,18 @@ window.iw=infoWindow;
 
 //Object that is searched to match layer ID in Groundwater Level Change Service
 var changeObj ={
-"2012 10 Year" :0,
-"2012 5 Year" : 1,
-"2012 3 Year" : 2,
-"2012 1 Year" : 3,
-"2013 10 Year" :4,
-"2013 5 Year" : 5,
-"2013 3 Year" : 6,
-"2013 1 Year" : 7,
-"2014 10 Year" :8,
-"2014 5 Year" : 9,
-"2014 3 Year" :10,
-"2014 1 Year" :11
+"Spring 2012 10 Year" :0,
+"Spring 2012 5 Year" : 1,
+"Spring 2012 3 Year" : 2,
+"Spring 2012 1 Year" : 3,
+"Spring 2013 10 Year" :4,
+"Spring 2013 5 Year" : 5,
+"Spring 2013 3 Year" : 6,
+"Spring 2013 1 Year" : 7,
+"Spring 2014 10 Year" :8,
+"Spring 2014 5 Year" : 9,
+"Spring 2014 3 Year" :10,
+"Spring 2014 1 Year" :11
 };
 
 
@@ -350,7 +281,6 @@ var measurementObj = {
 
 
   var staticServices = {};
-  var activeServices = [];
   var visibleServiceUrls = {};
   var identifyTasks = {};
   //Use the ImageParameters to set the visibleLayerIds layers in the map service during ArcGISDynamicMapServiceLayer construction.
@@ -358,9 +288,9 @@ var measurementObj = {
   //layerOption can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
 
 
-  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", 1);
-  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", 4);
-  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer",5)
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", "#tab2");
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", "#pane2");
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer","#pane3")
 
 
   var noLayers = [-1];
@@ -368,6 +298,13 @@ var measurementObj = {
   var suffix = "/MapServer";
   var serviceTypes = ["Change","Elevation","Depth"];
   var serviceNames = ["_Ramp","_Contours","_Points"];
+
+  var checks = query("#activeLayers input");
+  var selectSeason=dom.byId("selectSeason");
+  var selectYear = dom.byId("selectYear");
+  var selectSpan = dom.byId("selectSpan");
+  var spanDijit = registry.byId("selectSpan");
+
   forEach(serviceTypes,function(type){
     forEach(serviceNames,function(name){
       var url = prefix+type+name+suffix;
@@ -382,17 +319,15 @@ var measurementObj = {
 
  
  //Checkbox controls for pane 1,4
-         
 
 
 
-  function makeService(url, paneId){
+  function makeService(url, id){
     var service = new ArcGISDynamicMapServiceLayer(url, {"imageParameters": imageParameters});
     service.suspend();
     layers.push(service);
     identifyTasks[url] = new IdentifyTask(url);
-
-    on(query("#pane"+paneId+" input"), "change", function(){updateLayerVisibility(service,this.parentNode.parentNode)});
+    on(query(id+" input"), "change", function(){updateLayerVisibility(service,this.parentNode.parentNode)});
   }
 
 
@@ -432,13 +367,7 @@ var measurementObj = {
          
 
 
-//Getting layer ID from combobox dropdown selections
 
-function getLayerId(layer,type){
-  if(type === "Change")
-    return changeObj[layer];
-  return measurementObj[layer];
-}
 
 function addLayerInfo(service,layerId){
   var info = service.layerInfos[layerId]
@@ -460,17 +389,38 @@ function removeLayerInfo(service, layerId){
   info.rpNode = null;
 }
 
+//Getting layer ID from combobox dropdown selections
+
+function getLayerId(type){
+  var layer = selectSeason.value + " " + selectYear.value;
+  if(type === "Change")
+    return changeObj[layer +" "+ selectSpan.value];
+  return measurementObj[layer];
+}
+
 
 //Query builder for Groundwater Level Change
 
-function changeQuery(){
-  var type = "Change";
-  var checkedServices = getCheckedServices("#changeLayers input");
-  var changelayerId = getLayerId(dom.byId("changeSelectYr").value +" "+ dom.byId("changeSelectCP").value,type);
+function inputQuery(){
+  var type = dom.byId("radio1").checked === true
+             ? "Depth"
+             : dom.byId("radio2").checked
+               ? "Elevation"
+               : "Change"
+             ;
+  if(type === "Change") spanDijit.attr("disabled",false);
+  else spanDijit.attr("disabled",true);
 
-  toggleLayers(type,checkedServices,changelayerId) 
+  var checkedServices = getCheckedServices();
+  var layerId = getLayerId(type);
+
+  toggleLayers(type,checkedServices,layerId) 
 }
 
+function clearAndQuery(){
+  clearAllLayers();
+  inputQuery();
+}
 
 function toggleLayers(type,checkedServices,layerId){
   var services = getServicesFromChecks(checkedServices);
@@ -485,24 +435,36 @@ function toggleLayers(type,checkedServices,layerId){
 
 function showLayer(serviceName,layerId){
   var service = staticServices[serviceName];
-  service.resume();
-  service.setVisibleLayers([layerId])
-  addLayerInfo(service,layerId)
-  addVisibleUrl(service.url,service)
-
+    service.resume();
+    service.setVisibleLayers([layerId])
+    addLayerInfo(service,layerId)
+    addVisibleUrl(service.url,service)
 }
 
 function hideLayer(serviceName,layerId){
   var service = staticServices[serviceName];
-  service.setVisibleLayers(noLayers)
-  service.suspend();
-  removeLayerInfo(service,layerId)
-  removeVisibleUrl(service.url);
-
+  if(!service.suspended){
+    service.setVisibleLayers(noLayers)
+    service.suspend();
+    removeLayerInfo(service,layerId)
+    removeVisibleUrl(service.url);
+  }
 }
 
-function getCheckedServices(queryString){
-  return query(queryString).map(function(node,i){
+function clearAllLayers(){
+  var checked = getCheckedServices();
+  serviceTypes.forEach(function(type){
+    var layerId = getLayerId(type);
+    var services = getServicesFromChecks(checked);
+    services.forEach(function(name, i){
+      hideLayer(type+name,layerId)
+    })
+  })
+}
+
+
+function getCheckedServices(){
+  return checks.map(function(node,i){
     return node.checked
   });
 }
@@ -516,38 +478,17 @@ function getServicesFromChecks(checkedArray){
 
 
 
-//Query builder for Groundwater Level Measurements
+on(levelComboSeason,"change",inputQuery)
+on(levelComboYr,"change",inputQuery)
+on(levelComboSpan,"change",inputQuery)
 
-function measurementQuery(){
-  var type = dom.byId("radio1").checked === true
-           ? "Depth"
-           : "Elevation"
-           ;
-  var checkedServices = getCheckedServices("#measurementLayers input");
-  var measurementlayerId =  getLayerId(dom.byId("measurementSelectSeason").value+" "+dom.byId("measurementSelectYr").value);
- 
-  toggleLayers(type,checkedServices,measurementlayerId) 
-}
+on(dom.byId("radio1"),"change",clearAndQuery)
+on(dom.byId("radio2"),"change",clearAndQuery)
+on(dom.byId("radio3"),"change",clearAndQuery)
 
-
-
-on(dom.byId("changeRamp"),"change", changeQuery)
-on(dom.byId("changeMeasurement"),"change", changeQuery)
-on(dom.byId("changeContours"),"change", changeQuery)
-
-on(changeComboYr,"change",changeQuery)
-on(changeComboCP,"change",changeQuery)
-
-
-
-on(dom.byId("measurementRamp"),"change", measurementQuery)
-on(dom.byId("measurementMeasurement"),"change", measurementQuery)
-on(dom.byId("measurementContours"),"change", measurementQuery)
-
-on(measurementComboYr ,"change",measurementQuery)
-on(measurementComboSeason,"change",measurementQuery)
-on(dom.byId("radio1"),"change",measurementQuery)
-on(dom.byId("radio2"),"change",measurementQuery)
+on(dom.byId("levelMeasurement"),"change", inputQuery)
+on(dom.byId("levelContours"),"change", inputQuery)
+on(dom.byId("levelRamp"),"change", inputQuery)
 
 
 
@@ -629,8 +570,7 @@ map.addLayers(layers);
   infoWindow.setContent(tabs.domNode)
 
 infoWindow.on('hide',function(){
-  infoWindow.resize(425,325)
-  tabs.resize();
+  infoWindow.resize(425,325);
 })
 
 
@@ -645,7 +585,15 @@ infoWindow.on('hide',function(){
       setInfoPoint(e);
   })
 
+  function setInfoPoint(event){
+    if(infoWindow.zoomHandler)
+      infoWindow.zoomHandler.remove();
+    infoWindow.zoomHandler = on(DOC.getElementById('zoomLink'),'click',function(){
+      map.centerAndZoom(event.mapPoint,12)
+    });
+  }
   function runIdentify(event){
+    var noneShowing = 1;
     infoWindow.show(event.screenPoint);
     identifyParameters.geometry = event.mapPoint;
     identifyParameters.mapExtent = map.extent;
@@ -655,13 +603,25 @@ infoWindow.on('hide',function(){
 
     for(var taskUrl in identifyTasks){
       if(!visibleServiceUrls[taskUrl]) continue;
-      identifyParameters.layerIds = visibleServiceUrls[taskUrl].visibleLayers;
-      identifyTasks[taskUrl].execute(identifyParameters,processIdentify)
+        noneShowing = 0;
+        identifyParameters.layerIds = visibleServiceUrls[taskUrl].visibleLayers;
+        identifyTasks[taskUrl].execute(identifyParameters,doProcess(taskUrl))
+    }
+
+    if(noneShowing){
+      setNoData();
+    }
+  }
+
+  function doProcess(url){
+    return function(results){
+      processIdentify(results,url);
     }
   }
 
   function processIdentify (results){
-    console.log(results)
+    console.log(results,arguments)
+    if(!results.length) setNoData();
     forEach(results,function(result){
       var tab = new ContentPane({
         content:makeContent(result.feature.attributes),
@@ -669,6 +629,7 @@ infoWindow.on('hide',function(){
       })
       tabs.addChild(tab);
     })
+    tabs.resize();
   }
 
   function makeContent(attributes){
@@ -695,6 +656,14 @@ infoWindow.on('hide',function(){
       return makeEmbedded(value,0);
     else
       return value;
+  }
+
+  function setNoData(){
+    var tab = new ContentPane({
+        content:"<p>No Data</p>",
+        title:"No Data"
+      })
+      tabs.addChild(tab);
   }
 
   function makeSpaced(name){
@@ -727,13 +696,6 @@ infoWindow.on('hide',function(){
     return '<a target="_blank" href="'+url+'">'+value+'</a>'
   }
 
-  function setInfoPoint(event){
-    if(infoWindow.zoomHandler)
-      infoWindow.zoomHandler.remove();
-    infoWindow.zoomHandler = on(DOC.getElementById('zoomLink'),'click',function(){
-      map.centerAndZoom(event.mapPoint,12)
-    });
-  }
 
 
   function showPane(){
@@ -782,7 +744,6 @@ infoWindow.on('hide',function(){
 
 
 
-
   // Register map handlers.
 
 //Timeslider
@@ -796,15 +757,15 @@ infoWindow.on('hide',function(){
           
           var timeExtent = new TimeExtent();
           timeExtent.startTime = new Date("1/1/1920 UTC");
-          timeExtent.endTime = new Date("12/31/2012 UTC");
+          timeExtent.endTime = new Date("12/31/Spring 2012 UTC");
           timeSlider.setThumbCount(2);
           timeSlider.createTimeStopsByTimeInterval(timeExtent, 2, "esriTimeUnitsYears");
           timeSlider.setThumbIndexes([0,1]);
-          timeSlider.setThumbMovingRate(2000);
+          timeSlider.setThumbMoSpring vingRate(2000);
 
           
           //add labels for every other time stop
-          var labels = arrayUtils.map(timeSlider.timeStops, function(timeStop, i) { 
+          var labels = arrayUtiSpring ls.map(timeSlider.timeStops, function(timeStop, i) { 
             if ( i % 2 === 0 ) {
               return timeStop.getUTCFullYear(); 
             } else {
