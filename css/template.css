@@ -5,6 +5,10 @@
   padding:0;
 }
 
+.combobox{
+	padding:10px;
+}
+
 #rp{
   background:#f9feff;
   top:0;
@@ -124,8 +128,8 @@ body{
 
 #leftPane{
 	height:100%;
-	width:325px;
-	padding:20px;
+	width:375px;
+	padding:5px;
 	background:#E2F0F1;
 }
 
@@ -133,7 +137,7 @@ body{
 	font-size:18px;
 	font-weight:bold;
 	text-decoration:none;
-	color:#00F;
+	color:#000;
 	font:Verdana, Geneva, sans-serif;
 	
 }
@@ -153,7 +157,7 @@ body{
 
 
 #tabContainer{
-	height:95%;
+	height:90%;
 	width:100%;
 	background-color:transparent;
 	font:Verdana, Geneva, sans-serif;
@@ -193,7 +197,8 @@ body{
 
 #pane1{
 	font-size:15px;
-	font:Verdana, Geneva, sans-serif;
+	font:Verdana, Geneva, sans-serif
+	
 }
 
 
@@ -267,7 +272,7 @@ body{
 }
 
 #boundaryLeg{
-	margin-left:25px;
+	margin-left:20px;
 }
 
 #legendDiv{
@@ -299,7 +304,9 @@ body {
 	height: 60px;
 }
 
-
+.list_item{
+	margin-left:5px;
+}
 .poplist{
   list-style-type: none;
   margin:0;

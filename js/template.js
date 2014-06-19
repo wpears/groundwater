@@ -97,10 +97,10 @@ esri.config.defaults.io.corsDetection = false;
     var closeButton = dom.byId('closeRP');
     var arro = dom.byId("arro");
     var showing = 0;
-    var ie9 =(DOC.all&&DOC.addEventListener&&!W.atob)?true:false;
+    var oldIE =(DOC.all&&!W.atob)?true:false;
     
 
-    if(ie9) fx = require("dojo/_base/fx", function(fx){return fx});
+    if(oldIE) fx = require("dojo/_base/fx", function(fx){return fx});
   // Parse widgets included in the HTML. In this case, the BorderContainer and ContentPane.
   // data-dojo -types and -props get analyzed to initialize the application properly.
     parser.parse().then(hookRightPane);
@@ -171,7 +171,8 @@ window.iw=infoWindow;
     var accordionTabs = {
       "pane1" : "Measurements of Depth Below Ground and Groundwater Elevation, and Groundwater Change",
       "pane2" : "Base of Fresh Groundwater",
-      "pane3" : "Subsidence"
+      "pane3" : "Subsidence",
+	  "pane4" : "Estimated Available Storage"
     };
     function hookRightPane(){
       var acc = registry.byId("leftAccordion");
@@ -196,7 +197,7 @@ window.iw=infoWindow;
     var levelComboSeason = new ComboBox({
         id: "selectSeason",      
 	      name: "Season",
-        style:{width: "135px"},
+        style:{width: "100px"},
 		    value: "Spring",
         store: measurementStoreSeason,
         searchAttr: "name"
@@ -210,7 +211,7 @@ window.iw=infoWindow;
     var levelComboYr = new ComboBox({
         id: "selectYear",
 		    name: "Year",
-        style:{width: "135px"},
+        style:{width: "100px"},
 		    value: "2013",
         store: measurementStoreYr,
         searchAttr: "name"
@@ -238,7 +239,7 @@ window.iw=infoWindow;
     var levelComboSpan= new ComboBox({
         id: "selectSpan",
         name: "Comparison Period",
-        style:{width: "140px"},
+        style:{width: "100px", align:"center"},
 		    value: "1 Year",
         store: levelStoreSpan,
         searchAttr: "name"
@@ -268,13 +269,23 @@ var changeObj ={
 "Spring 2014 1 Year" :11
 };
 
-
 //Object that is searched to match layer ID in Groundwater Level Measurements Service
 var measurementObj = {
   "Spring 2013":"0",
   "Spring 2014":"1" 
   };
 
+var changeNames = {};
+var measurementNames={};
+
+(function(){
+  for(var name in changeObj){
+    changeNames[changeObj[name]] = name;
+  }
+  for(var name in measurementObj){
+    measurementNames[measurementObj[name]] = name;
+  }
+})();
 
 
 //Set variables for queries in accordian panes
@@ -291,7 +302,7 @@ var measurementObj = {
   makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", "#tab2");
   makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", "#pane2");
   makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer","#pane3")
-
+  makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Estimated_Available_Storage/MapServer","#pane4")
 
   var noLayers = [-1];
   var prefix = "http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_";
@@ -418,6 +429,7 @@ function inputQuery(){
 }
 
 function clearAndQuery(){
+  showLegend(this.id)
   clearAllLayers();
   inputQuery();
 }
@@ -430,6 +442,16 @@ function toggleLayers(type,checkedServices,layerId){
     else
       hideLayer(type+name,layerId)
   })
+}
+
+function showLegend(id){
+  if(id === "radio1"){
+
+  }else if (id === "radio2"){
+
+  }else{
+
+  }
 }
 
 
@@ -550,15 +572,13 @@ map.addLayers(layers);
   // the button will go, the next argument is the line that the dijit creates, the third is the symbol for points
   // and line vertices, and the last optional argument is an array that takes a reference to the map
   // and an array of features that events should be paused on 
-  /*  var measureTool = MeasureTool( measureAnchor
+/*    var measureTool = MeasureTool( measureAnchor
                                  , new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0, 0, 0]), 2)
                                  , new SimpleMarkerSymbol({"size":6,"color":new Color([0, 0, 0])})
-                                 , { map:map
-                                   , eventFeatures:[lyrEverything]
-                                   }
+                                 , { map:map}
                                  );   						 
-*/
 
+*/
  
  
  //Tabbed InfoWindow with Identify tool 
@@ -619,12 +639,12 @@ infoWindow.on('hide',function(){
     }
   }
 
-  function processIdentify (results){
-    console.log(results,arguments)
+  function processIdentify (results,url){
     if(!results.length) setNoData();
+    else var blurb = getBlurb(results[0],url);
     forEach(results,function(result){
       var tab = new ContentPane({
-        content:makeContent(result.feature.attributes),
+        content:makeContent(result.feature.attributes,blurb),
         title:makeSpaced(result.layerName)
       })
       tabs.addChild(tab);
@@ -632,8 +652,8 @@ infoWindow.on('hide',function(){
     tabs.resize();
   }
 
-  function makeContent(attributes){
-    var list = "<ul>";
+  function makeContent(attributes,blurb){
+    var list = blurb+"<ul>";
     for (var key in attributes){
       if(attributes.hasOwnProperty(key)&&key!=="OBJECTID"&&key!=="Shape"&&key!=="Shape_Area"&&key!=="Shape_Length"){
         var spaced = makeSpaced(key)
@@ -656,6 +676,22 @@ infoWindow.on('hide',function(){
       return makeEmbedded(value,0);
     else
       return value;
+  }
+
+  function getBlurb(result,url){
+    var name;
+    var arr;
+    var type;
+    if(url.match("GIC_Change")){
+      name=changeNames[result.layerId];
+      arr = name.split(" ");
+      return "<span>"+arr[2]+" "+arr[3].toLowerCase()+" span of change ending in "+arr[0]+" "+arr[1]+"</span>";
+    }else{
+      name=measurementNames[result.layerId];
+      if(url.match("GIC_Elevation"))type = "Groundwater elevation measured in "
+      else type = "Water depth below ground measured in "
+      return "<span>"+ type + name +"</span>"
+    }
   }
 
   function setNoData(){
@@ -702,7 +738,7 @@ infoWindow.on('hide',function(){
     var i = 0, j = movers.length;
     showing = 1;
     arro.style.backgroundPosition = "-32px -16px";
-    if(ie9){
+    if(oldIE){
       for(;i<j;i++){
         if(movers[i] === dataPane)
           fx.animateProperty({node:movers[i], duration:300, properties:{marginRight:0}}).play();
@@ -718,7 +754,7 @@ infoWindow.on('hide',function(){
     var i = 0, j = movers.length;
     showing = 0;
     arro.style.backgroundPosition = "-96px -16px";
-    if(ie9){
+    if(oldIE){
       for(;i<j;i++){
       if(movers[i] === dataPane)
         fx.animateProperty({node:movers[i], duration:250, properties:{marginRight:-285}}).play();
