@@ -183,7 +183,7 @@ window.iw=infoWindow;
       populate();
       DOC.body.style.visibility="visible";
       W.setTimeout(function(){
-        on.emit("click",dom.byId("pane1_button"));
+        on.emit(dom.byId("pane1_button"),"click",{bubbles:true,cancelable:true});
       },300);
 
     }
@@ -782,7 +782,6 @@ infoWindow.on('hide',function(){
 
   on(closeButton,"mousedown", closeToggle);
 
-on.emit()
 
 
 
