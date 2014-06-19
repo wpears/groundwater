@@ -182,6 +182,10 @@ window.iw=infoWindow;
       on(acc.domNode,".dijitAccordionTitle:click",populate);
       populate();
       DOC.body.style.visibility="visible";
+      W.setTimeout(function(){
+        on.emit("click",dom.byId("pane1_button"));
+      },300);
+
     }
        
 
@@ -773,8 +777,8 @@ infoWindow.on('hide',function(){
   }
 
   on(closeButton,"mousedown", closeToggle);
-//  W.setTimeout(showPane,300);
 
+on.emit()
 
 
 
