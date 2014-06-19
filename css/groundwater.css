@@ -58,14 +58,14 @@
              -1px 0px 1px 0 #a5b6e0;
 }
 
-#closeRp:hover{
+#closeRP:hover{
    cursor:pointer;
    box-shadow: 1px 1px 2px 0 #728dcf,
               -1px 0px 2px 0 #728dcf,
                inset 0px 1px 1px 0 #f1f3fa;
 }
 
-#closeRp:active{
+#closeRP:active{
   padding:16px 1px 0 4px;
 }
 
