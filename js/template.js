@@ -449,11 +449,15 @@ function toggleLayers(type,checkedServices,layerId){
 }
 
 function showLegend(id){
-  if(id === "radio1"){
-
-  }else if (id === "radio2"){
-
-  }else{
+  if(id === "radio1"){img.setAttribute("dynamicPtsLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ChangePoints.png"); 						
+					  img.setAttribute("dynamicContoursLeg","");
+					  img.setAttribute("dynamicRampLeg","");
+  }else if (id === "radio2"){img.setAttribute("dynamicPtsLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_DepthPoints.png");
+							img.setAttribute("dynamicCountoursLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_DepthContour.png");
+							img.setAttribute("dynamicRampLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_DepthRamp.png");
+  }else{				img.setAttribute("dynamicPtsLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ElevationPoints.png");
+							img.setAttribute("dynamicCountoursLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ElevationContour.png");
+							img.setAttribute("dynamicRampLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ElevationRamp.png");
 
   }
 }
