@@ -448,19 +448,19 @@ function toggleLayers(type,checkedServices,layerId){
   })
 }
 
-function showLegend(id){
-  if(id === "radio1"){img.setAttribute("dynamicPtsLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ChangePoints.png"); 						
-					  img.setAttribute("dynamicContoursLeg","");
-					  img.setAttribute("dynamicRampLeg","");
-  }else if (id === "radio2"){img.setAttribute("dynamicPtsLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_DepthPoints.png");
-							img.setAttribute("dynamicCountoursLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_DepthContour.png");
-							img.setAttribute("dynamicRampLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_DepthRamp.png");
-  }else{				img.setAttribute("dynamicPtsLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ElevationPoints.png");
-							img.setAttribute("dynamicCountoursLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ElevationContour.png");
-							img.setAttribute("dynamicRampLeg","\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ElevationRamp.png");
 
-  }
-}
+
+function showLegend(id){
+		
+	  if(id === "radio1"){document.getElementById("dynamicPtsLeg").src = "\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ChangePoints.png";
+	  
+	  }
+	  else if (type === "radio2"){
+	  }
+	  else{	document.getElementById("dynamicPtsLeg").src = "\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ChangePoints.png";			
+	
+	  }
+	}
 
 
 function showLayer(serviceName,layerId){
