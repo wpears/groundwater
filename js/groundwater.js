@@ -189,108 +189,153 @@ window.iw=infoWindow;
     }
        
 
-// Building measurement Drop down combobox lists
-
-	
-	var measurementStoreYr = new Memory({
-        data: [
-            {name:"2013", id:"0"},
-            {name:"2014", id:"1"}]
-    });
-
-    var levelComboSeason = new ComboBox({
-        id: "selectSeason",      
-	      name: "Season",
-        style:{width: "100px"},
-		    value: "Spring",
-        store: measurementStoreSeason,
-        searchAttr: "name"
-    }, "selectSeason");
-	
-	var measurementStoreSeason = new Memory({
-        data: [
-            {name:"Spring", id:"0"}
-        ]
-    });
-    var levelComboYr = new ComboBox({
-        id: "selectYear",
-		    name: "Year",
-        style:{width: "100px"},
-		    value: "2013",
-        store: measurementStoreYr,
-        searchAttr: "name"
-    }, "selectYear");
-	
-	
-	
-	
-	
-	
-// Building Change Drop down combobox lists	
-	
-	var changeStoreYr = measurementStoreYr
-
-	
-	var levelStoreSpan= new Memory({
-        data:[
-            {name:"1 Year", id:"0"},
-            {name:"3 Year", id:"1"},
-            {name:"5 Year", id:"2"},
-            {name:"10 Year", id:"3"}
-        ]
-    });
-
-    var levelComboSpan= new ComboBox({
-        id: "selectSpan",
-        name: "Comparison Period",
-        style:{width: "100px", align:"center"},
-		    value: "1 Year",
-        store: levelStoreSpan,
-        searchAttr: "name"
-    }, "selectSpan");
-  
-  
 
 
 
-//hook up query builder in left pane
+function buildChangeYears(layerObj){
+  var yearObj= {};
+  for (var name in layerObj){
+    var years = extractYears(name);
+    addYearsFromSpan(yearObj,years);
+  }
+
+  for(var year in yearObj){
+    yearObj[year].sort(sortSpans);
+  }
+  return yearObj;
+}
 
 
+function extractYears(name){
+  var arr = name.split("_");
+  return [arr[0].slice(1),arr[1].slice(1)]
+}
 
-//Object that is searched to match layer ID in Groundwater Level Change Service
-var changeObj ={
-"Spring 2012 10 Year" :0,
-"Spring 2012 5 Year" : 1,
-"Spring 2012 3 Year" : 2,
-"Spring 2012 1 Year" : 3,
-"Spring 2013 10 Year" :4,
-"Spring 2013 5 Year" : 5,
-"Spring 2013 3 Year" : 6,
-"Spring 2013 1 Year" : 7,
-"Spring 2014 10 Year" :8,
-"Spring 2014 5 Year" : 9,
-"Spring 2014 3 Year" :10,
-"Spring 2014 1 Year" :11
+
+function addYearsFromSpan(yearObj,years){
+  var end = years[0];
+  var start = years[1];
+  var phrase = makeSpanPhrase(start,end);
+
+  ensureKeyExists(yearObj,start);
+  ensureKeyExists(yearObj,end);
+
+  yearObj[start].push({span:phrase});
+  yearObj[end].push({span:phrase});
+}
+
+
+function ensureKeyExists(obj,year){
+  if(obj[year] === undefined) obj[year] = [];
+}
+
+
+function makeSpanPhrase(start, end){
+  return start+" to "+end;
+}
+
+function sortSpans(a,b){
+  return a.span-b.span;
+}
+
+function setSpanData(year){
+  var years = changeYears[year];
+  levelStoreSpan.setData(years)
+  levelComboSpan.setValue(years[0].span);
+}
+
+
+//essentially copy/pasted from the service, then massaged in non-Bill format (everyone hates the trailing p)
+// this could/should be done as a request to the API for the layer list
+var rawServiceObj ={
+  S2012_S2002_p : 0,
+  S2012_S2007_p : 1,
+  S2012_S2009_p : 2,
+  S2012_S2011_p : 3,
+  S2013_S2003_p : 4,
+  S2013_S2008_p : 5,
+  S2013_S2010_p : 6,
+  S2013_S2012_p : 7,
+  S2014_S2004_p : 8,
+  S2014_S2009_p : 9,
+  S2014_S2011_p : 10,
+  S2014_S2013_p : 11
 };
 
+//Object that is searched to match layer ID in Groundwater Level Change Service
+var changeObj = {
+  "2002 to 2012" : 0,
+  "2007 to 2012" : 1,
+  "2009 to 2012" : 2,
+  "2011 to 2012" : 3,
+  "2003 to 2013" : 4,
+  "2008 to 2013" : 5,
+  "2010 to 2013" : 6,
+  "2012 to 2013" : 7,
+  "2004 to 2014" : 8,
+  "2009 to 2014" : 9,
+  "2011 to 2014" : 10,
+  "2013 to 2014" : 11
+};
+
+var changeYears = buildChangeYears(rawServiceObj);
+
+console.log(changeYears);
 //Object that is searched to match layer ID in Groundwater Level Measurements Service
 var measurementObj = {
-  "Spring 2013":"0",
-  "Spring 2014":"1" 
-  };
+  "Spring 2013":0,
+  "Spring 2014":1 
+};
 
-var changeNames = {};
-var measurementNames={};
 
-(function(){
-  for(var name in changeObj){
-    changeNames[changeObj[name]] = name;
-  }
-  for(var name in measurementObj){
-    measurementNames[measurementObj[name]] = name;
-  }
-})();
 
+  
+var levelStoreYr = new Memory({
+  data: [
+    {name:"2013", id:"0"},
+    {name:"2014", id:"1"}
+  ]
+});
+
+var levelStoreSeason = new Memory({
+  data: [
+    {name:"Spring", id:"0"}
+  ]
+});
+
+var levelStoreSpan= new Memory({
+  data:[]
+});
+
+
+var levelComboYr = new ComboBox({
+        id: "selectYear",
+        name: "Year",
+        style:{width: "100px"},
+        value: "2013",
+        store: levelStoreYr,
+        searchAttr: "name"
+    },"selectYear");
+
+var levelComboSeason = new ComboBox({
+        id: "selectSeason",      
+        name: "Season",
+        style:{width: "100px"},
+        value: "Spring",
+        store: levelStoreSeason,
+        searchAttr: "name"
+    }, "selectSeason");
+  
+var levelComboSpan= new ComboBox({
+        id: "selectSpan",
+        name: "Comparison Period",
+        style:{width: "125px", align:"center"},
+        value: "",
+        store: levelStoreSpan,
+        searchAttr: "span"
+    }, "selectSpan");
+
+setSpanData("2013");
 
 //Set variables for queries in accordian panes
 
@@ -314,17 +359,29 @@ var measurementNames={};
   var serviceTypes = ["Change","Elevation","Depth"];
   var serviceNames = ["_Ramp","_Contours","_Points"];
 
-  var checks = query("#activeLayers input");
+  var depthRadio = dom.byId("radio1");
+  var elevRadio = dom.byId("radio2");
+  var changeRadio = dom.byId("radio3");
+
+
   var selectSeason=dom.byId("selectSeason");
   var selectYear = dom.byId("selectYear");
   var selectSpan = dom.byId("selectSpan");
   var spanDijit = registry.byId("selectSpan");
+
+  var checks = query("#activeLayers input");
+  var pointsLegend = dom.byId("dynamicPtsLeg");
+
+
 
   forEach(serviceTypes,function(type){
     forEach(serviceNames,function(name){
       var url = prefix+type+name+suffix;
       var layer = new ArcGISDynamicMapServiceLayer(url,
             {"imageParameters": imageParameters});
+      layer.on("load",function(obj){
+        console.log(obj.layer);
+      })
       layer.suspend();
       layers.push(layer)
       staticServices[type+name] = layer;
@@ -409,7 +466,7 @@ function removeLayerInfo(service, layerId){
 function getLayerId(type){
   var layer = selectSeason.value + " " + selectYear.value;
   if(type === "Change")
-    return changeObj[layer +" "+ selectSpan.value];
+    return changeObj[selectSpan.value];
   return measurementObj[layer];
 }
 
@@ -427,7 +484,7 @@ function inputQuery(){
   else spanDijit.attr("disabled",true);
 
   var checkedServices = getCheckedServices();
-  var layerId = getLayerId(type);
+ var layerId = getLayerId(type);
 
   toggleLayers(type,checkedServices,layerId) 
 }
@@ -451,16 +508,13 @@ function toggleLayers(type,checkedServices,layerId){
 
 
 function showLegend(id){
-		
-	  if(id === "radio1"){document.getElementById("dynamicPtsLeg").src = "\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ChangePoints.png";
-	  
-	  }
-	  else if (type === "radio2"){
-	  }
-	  else{	document.getElementById("dynamicPtsLeg").src = "\\mrsbmapp00642\inetpub\wwwroot\GIC\images\Dynamic_ChangePoints.png";			
-	
-	  }
+	if(id === "radio1"){
+    pointsLegend.src = "images/Dynamic_ChangePoints.png";
+	}else if (id === "radio2"){
+	}else{
+    pointsLegend.src = "images/Dynamic_ChangePoints.png";
 	}
+}
 
 
 function showLayer(serviceName,layerId){
@@ -506,15 +560,24 @@ function getServicesFromChecks(checkedArray){
 }
 
 
+function yearChange(year){
+  if(changeRadio.checked)
+    setSpanData(year);
+  inputQuery();
+}
+
+function spanChange(){
+  inputQuery();
+}
 
 
+on(levelComboYr,"change",yearChange)
 on(levelComboSeason,"change",inputQuery)
-on(levelComboYr,"change",inputQuery)
-on(levelComboSpan,"change",inputQuery)
+on(levelComboSpan,"change",spanChange)
 
-on(dom.byId("radio1"),"change",clearAndQuery)
-on(dom.byId("radio2"),"change",clearAndQuery)
-on(dom.byId("radio3"),"change",clearAndQuery)
+on(depthRadio,"change",clearAndQuery)
+on(elevRadio,"change",clearAndQuery)
+on(changeRadio,"change",clearAndQuery)
 
 on(dom.byId("levelMeasurement"),"change", inputQuery)
 on(dom.byId("levelContours"),"change", inputQuery)
