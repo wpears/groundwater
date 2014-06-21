@@ -165,7 +165,7 @@ window.iw=infoWindow;
 
     var identifyParameters = new IdentifyParameters();
     identifyParameters.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE;
-    identifyParameters.tolerance = 2;
+    identifyParameters.tolerance = 3;
     identifyParameters.returnGeometry = false;
 
     var accordionTabs = {
@@ -280,7 +280,6 @@ var changeObj = {
 
 var changeYears = buildChangeYears(rawServiceObj);
 
-console.log(changeYears);
 //Object that is searched to match layer ID in Groundwater Level Measurements Service
 var measurementObj = {
   "Spring 2013":0,
@@ -379,9 +378,6 @@ setSpanData("2013");
       var url = prefix+type+name+suffix;
       var layer = new ArcGISDynamicMapServiceLayer(url,
             {"imageParameters": imageParameters});
-      layer.on("load",function(obj){
-        console.log(obj.layer);
-      })
       layer.suspend();
       layers.push(layer)
       staticServices[type+name] = layer;
@@ -463,11 +459,31 @@ function removeLayerInfo(service, layerId){
 
 //Getting layer ID from combobox dropdown selections
 
-function getLayerId(type){
-  var layer = selectSeason.value + " " + selectYear.value;
-  if(type === "Change")
-    return changeObj[selectSpan.value];
-  return measurementObj[layer];
+function getLayerId(type,key){
+  var layerInfos = staticServices[key].layerInfos
+  var season = selectSeason.value;
+  var year = selectYear.value;
+  var span = type === "Change"
+           ? selectSpan.value
+           : ''
+           ;
+  return matchLayer(layerInfos,season,year,span);
+}
+
+function matchLayer(layerInfos,season,year,span){
+  var reg;
+  if(span !== ''){
+    var spl = span.split(' ');
+    var start = spl[0];
+    var end = spl[2];
+    reg = new RegExp(end + ".*" + start);
+  }else{
+    reg = new RegExp("("+season+"|"+season[0]+").*"+year)
+  }
+  for(var i=0; i < layerInfos.length;i++){
+    if(reg.test(layerInfos[i].name))
+      return i;
+  }
 }
 
 
@@ -484,9 +500,8 @@ function inputQuery(){
   else spanDijit.attr("disabled",true);
 
   var checkedServices = getCheckedServices();
- var layerId = getLayerId(type);
 
-  toggleLayers(type,checkedServices,layerId) 
+  toggleLayers(type,checkedServices);
 }
 
 function clearAndQuery(){
@@ -495,13 +510,15 @@ function clearAndQuery(){
   inputQuery();
 }
 
-function toggleLayers(type,checkedServices,layerId){
+function toggleLayers(type,checkedServices){
   var services = getServicesFromChecks(checkedServices);
   services.forEach(function(name,i){
+    var key = type+name;
+    var layerId = getLayerId(type,key)
     if(checkedServices[i])
-      showLayer(type+name,layerId)
+      showLayer(key,layerId)
     else
-      hideLayer(type+name,layerId)
+      hideLayer(key,layerId)
   })
 }
 
@@ -538,10 +555,11 @@ function hideLayer(serviceName,layerId){
 function clearAllLayers(){
   var checked = getCheckedServices();
   serviceTypes.forEach(function(type){
-    var layerId = getLayerId(type);
     var services = getServicesFromChecks(checked);
     services.forEach(function(name, i){
-      hideLayer(type+name,layerId)
+      var key = type+name;
+      var layerId = getLayerId(type,key);
+      hideLayer(key,layerId)
     })
   })
 }
@@ -561,8 +579,7 @@ function getServicesFromChecks(checkedArray){
 
 
 function yearChange(year){
-  if(changeRadio.checked)
-    setSpanData(year);
+  setSpanData(year);
   inputQuery();
 }
 
@@ -711,16 +728,42 @@ infoWindow.on('hide',function(){
   }
 
   function processIdentify (results,url){
-    if(!results.length) setNoData();
-    else var blurb = getBlurb(results[0],url);
+    if(!results.length) return
     forEach(results,function(result){
-      var tab = new ContentPane({
-        content:makeContent(result.feature.attributes,blurb),
-        title:makeSpaced(result.layerName)
-      })
+      var tab = new ContentPane(makePane(result,url))
       tabs.addChild(tab);
     })
     tabs.resize();
+  }
+
+  function makePane(result,url){
+    var isChange = !!url.match("GIC_Change");
+    var activeData = !!url.match(/_Change_|_Depth_|_Elevation_/);
+    var title;
+    var blurb;
+    if(activeData){
+      title = getTitle(result,isChange);
+      blurb = getBlurb(title,isChange,url);
+    }else{
+      title = makeSpaced(result.layerName)
+      blurb = '';
+    }
+    var content = makeContent(result.feature.attributes,blurb)
+
+    return{title:title,content:content}
+  }
+
+  function getTitle(result,isChange){
+    var name = result.layerName;
+    var season = name.match(/S|F/);
+    if(season === "S") season = "Spring "
+    else season = "Fall "
+
+    if(isChange){
+      var arr=name.match(/(\d{4}).*(\d{4})/);
+      return arr[2] +" to "+arr[1];
+    }
+    return season+name.match(/\d{4}/)[0]
   }
 
   function makeContent(attributes,blurb){
@@ -749,19 +792,15 @@ infoWindow.on('hide',function(){
       return value;
   }
 
-  function getBlurb(result,url){
-    var name;
-    var arr;
+  function getBlurb(title,isChange,url){
     var type;
-    if(url.match("GIC_Change")){
-      name=changeNames[result.layerId];
-      arr = name.split(" ");
-      return "<span>"+arr[2]+" "+arr[3].toLowerCase()+" span of change ending in "+arr[0]+" "+arr[1]+"</span>";
+    if(isChange){
+        return "<span>Groundwater change from "+ title+".</span>";
     }else{
-      name=measurementNames[result.layerId];
-      if(url.match("GIC_Elevation"))type = "Groundwater elevation measured in "
+      if(url.match("GIC_Elevation"))
+        type = "Groundwater elevation measured in "
       else type = "Water depth below ground measured in "
-      return "<span>"+ type + name +"</span>"
+      return "<span>"+ type + name +".</span>"
     }
   }
 
