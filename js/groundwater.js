@@ -369,7 +369,7 @@ setSpanData("2013");
   var spanDijit = registry.byId("selectSpan");
 
   var checks = query("#activeLayers input");
-  var pointsLegend = dom.byId("dynamicPtsLeg");
+  var pointsLegend = dom.byId("dynamicPointsLegend");
 
 
 
@@ -526,8 +526,9 @@ function toggleLayers(type,checkedServices){
 
 function showLegend(id){
 	if(id === "radio1"){
-    pointsLegend.src = "images/Dynamic_ChangePoints.png";
+    pointsLegend.src = "images/Dynamic_DepthPoints.png";
 	}else if (id === "radio2"){
+    pointsLegend.src = "images/Dynamic_ElevationPoints.png"
 	}else{
     pointsLegend.src = "images/Dynamic_ChangePoints.png";
 	}
