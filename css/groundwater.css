@@ -175,9 +175,12 @@ body{
 }
 .levelMeasurementHeadings{
 	margin-bottom:4px;
-	margin-top:5px;
-	
+	margin-top:20px;
 }
+.levelMeasurementHeadings:nth-child(1){
+  margin-top:2px;
+}
+
 #homeButton {
       position: absolute;
       top: 95px;
@@ -208,10 +211,15 @@ body{
 #pane1{
 	font-size:15px;
 	font:Verdana, Geneva, sans-serif
-	
 }
 
+#pane1 >div{
+  margin-left:20px;
+}
 
+.dijitInputField.dijitInputContainer.dijitReset{
+  padding-left: 5px;
+}
 #pane4{
 	font-size:15px;
 	font:Verdana, Geneva, sans-serif;

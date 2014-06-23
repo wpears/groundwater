@@ -192,12 +192,12 @@ window.iw=infoWindow;
 
 
 
-function buildChangeYears(layerObj){
+function buildChangeYears(layerInfos){
   var yearObj= {};
-  for (var name in layerObj){
-    var years = extractYears(name);
+  forEach(layerInfos,function(info,i){
+    var years = extractYears(info.name);
     addYearsFromSpan(yearObj,years);
-  }
+  })
 
   for(var year in yearObj){
     yearObj[year].sort(sortSpans);
@@ -247,58 +247,16 @@ function setSpanData(year){
 
 //essentially copy/pasted from the service, then massaged in non-Bill format (everyone hates the trailing p)
 // this could/should be done as a request to the API for the layer list
-var rawServiceObj ={
-  S2012_S2002_p : 0,
-  S2012_S2007_p : 1,
-  S2012_S2009_p : 2,
-  S2012_S2011_p : 3,
-  S2013_S2003_p : 4,
-  S2013_S2008_p : 5,
-  S2013_S2010_p : 6,
-  S2013_S2012_p : 7,
-  S2014_S2004_p : 8,
-  S2014_S2009_p : 9,
-  S2014_S2011_p : 10,
-  S2014_S2013_p : 11
-};
-
-//Object that is searched to match layer ID in Groundwater Level Change Service
-var changeObj = {
-  "2002 to 2012" : 0,
-  "2007 to 2012" : 1,
-  "2009 to 2012" : 2,
-  "2011 to 2012" : 3,
-  "2003 to 2013" : 4,
-  "2008 to 2013" : 5,
-  "2010 to 2013" : 6,
-  "2012 to 2013" : 7,
-  "2004 to 2014" : 8,
-  "2009 to 2014" : 9,
-  "2011 to 2014" : 10,
-  "2013 to 2014" : 11
-};
-
-var changeYears = buildChangeYears(rawServiceObj);
-
-//Object that is searched to match layer ID in Groundwater Level Measurements Service
-var measurementObj = {
-  "Spring 2013":0,
-  "Spring 2014":1 
-};
 
 
-
-  
 var levelStoreYr = new Memory({
   data: [
-    {name:"2013", id:"0"},
-    {name:"2014", id:"1"}
   ]
 });
 
 var levelStoreSeason = new Memory({
   data: [
-    {name:"Spring", id:"0"}
+    {name:"Spring"}
   ]
 });
 
@@ -311,7 +269,7 @@ var levelComboYr = new ComboBox({
         id: "selectYear",
         name: "Year",
         style:{width: "100px"},
-        value: "2013",
+        value: "2012",
         store: levelStoreYr,
         searchAttr: "name"
     },"selectYear");
@@ -329,12 +287,10 @@ var levelComboSpan= new ComboBox({
         id: "selectSpan",
         name: "Comparison Period",
         style:{width: "125px", align:"center"},
-        value: "",
+        value: "2002 to 2012",
         store: levelStoreSpan,
         searchAttr: "span"
     }, "selectSpan");
-
-setSpanData("2013");
 
 //Set variables for queries in accordian panes
 
@@ -342,6 +298,7 @@ setSpanData("2013");
   var staticServices = {};
   var visibleServiceUrls = {};
   var identifyTasks = {};
+  var changeYears;
   //Use the ImageParameters to set the visibleLayerIds layers in the map service during ArcGISDynamicMapServiceLayer construction.
   var imageParameters = new ImageParameters({layerIds:[-1],layerOption:ImageParameters.LAYER_OPTION_SHOW});
   //layerOption can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
@@ -375,21 +332,35 @@ setSpanData("2013");
 
 
 
-
+var totalServices = serviceTypes.length*serviceNames.length;
+var loadedServices = 0;
 
   forEach(serviceTypes,function(type){
     forEach(serviceNames,function(name){
       var url = prefix+type+name+suffix;
       var layer = new ArcGISDynamicMapServiceLayer(url,
-            {"imageParameters": imageParameters});
+            {"imageParameters": imageParameters})
       layer.suspend();
       layers.push(layer)
       staticServices[type+name] = layer;
       identifyTasks[url] = new IdentifyTask(url);
+      layer.on('load',function(evt){initializeLayers(evt.layer,type+name)});
     })
   })
 
- 
+
+  function initializeLayers(layer,key){
+    if(key==="Change_Points"){
+      changeYears = buildChangeYears(layer.layerInfos);
+      setSpanData("2012");
+    }else if(key==="Depth_Points"){
+
+    }
+    loadedServices++;
+    if(loadedServices===totalServices)
+      inputQuery();
+  }
+
  //Checkbox controls for pane 1,4
 
 
@@ -484,10 +455,13 @@ function matchLayer(layerInfos,season,year,span){
   }else{
     reg = new RegExp("("+season+"|"+season[0]+").*"+year)
   }
+  console.log(reg)
   for(var i=0; i < layerInfos.length;i++){
+    console.log(layerInfos[i].name)
     if(reg.test(layerInfos[i].name))
       return i;
   }
+  console.log('through')
 }
 
 
@@ -518,15 +492,29 @@ function toggleLayers(type,checkedServices){
   var services = getServicesFromChecks(checkedServices);
   services.forEach(function(name,i){
     var key = type+name;
-    var layerId = getLayerId(type,key)
-    if(checkedServices[i])
-      showLayer(key,layerId)
-    else
-      hideLayer(key,layerId)
+    var layerId = getLayerId(type,key);
+    if(layerId===undefined){
+      disableLayer(checks[i])
+    }else{
+      enableLayer(checks[i])
+      if(checkedServices[i])
+        showLayer(key,layerId)
+      else
+        hideLayer(key,layerId)
+    }
   })
 }
 
+function disableLayer(input){
+  input.disabled = true;
+  input.checked = false;
+  input.parentNode.style.opacity="0.8"
+}
 
+function enableLayer(input){
+  input.disabled = false;
+  input.parentNode.style.opacity="1"
+}
 
 function showLegend(id){
 	if(id === "radio1"){
@@ -599,6 +587,7 @@ function yearChange(year){
 function spanChange(){
   inputQuery();
 }
+
 
 
 on(levelComboYr,"change",yearChange)
