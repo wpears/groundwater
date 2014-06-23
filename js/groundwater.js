@@ -540,7 +540,7 @@ function showLegend(id){
 
 	}else{
     pointsLegend.src = "images/Dynamic_ChangePoints.png";
-	contoursLegend.src= "images/Dynamic_ChangeContour.png";
+	contoursLegend.src= "images/Dynamic_ChangeContours.png";
 	rampLegend.src= "images/Dynamic_ChangeRamp.png";
 
 	}

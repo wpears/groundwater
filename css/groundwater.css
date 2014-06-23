@@ -175,6 +175,7 @@ body{
 }
 .levelMeasurementHeadings{
 	margin-bottom:4px;
+	margin-top:5px;
 	
 }
 #homeButton {
@@ -186,18 +187,22 @@ body{
 
 	
 
-
+.checkBox{
+	margin-left:5px;
+	margin-bottom:15px;
+}
 
 .legendTitle{
 	margin-top:5px;
-	font-size:12px;
-	margin-bottom:0px;
+	font-size:14px;
+	margin-bottom:2px;
 	margin-left:15px;
 	
 }
 
 .boundaryLeg{
-	margin-left:20px;
+	margin-left:25px;
+	margin-bottom:2px;
 }
 
 #pane1{
