@@ -370,6 +370,10 @@ setSpanData("2013");
 
   var checks = query("#activeLayers input");
   var pointsLegend = dom.byId("dynamicPointsLegend");
+  var contoursLegend = dom.byId("dynamicContoursLegend");
+  var rampLegend = dom.byId("dynamicRampLegend");
+
+
 
 
 
@@ -527,10 +531,18 @@ function toggleLayers(type,checkedServices){
 function showLegend(id){
 	if(id === "radio1"){
     pointsLegend.src = "images/Dynamic_DepthPoints.png";
+	contoursLegend.src= "images/Dynamic_DepthContour.png";
+	rampLegend.src= "images/Dynamic_DepthRamp.png";
 	}else if (id === "radio2"){
     pointsLegend.src = "images/Dynamic_ElevationPoints.png"
+	contoursLegend.src= "images/Dynamic_ElevationContour.png";
+	rampLegend.src= "images/Dynamic_ElevationRamp.png";
+
 	}else{
     pointsLegend.src = "images/Dynamic_ChangePoints.png";
+	contoursLegend.src= "images/Dynamic_ChangeContour.png";
+	rampLegend.src= "images/Dynamic_ChangeRamp.png";
+
 	}
 }
 

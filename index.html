@@ -40,7 +40,7 @@
                                               <div>Groundwater Well Info  1990 to 2014</div>
                                               <div id="timeSliderDiv"></div>
                                     	    </div></div>-->
-                                    				<h3>Data Type:</h3>
+                                    				<h3 class="levelMeasurementHeadings">Data Type:</h3>
                                            <form>
                                         		   <input type="radio"  id="radio1" class= "list_item" name="depthselector" >
                                                     <label for="radio1">Depth Below Ground</label><br/>
@@ -52,7 +52,7 @@
                                                 	  
                                                 
                                                 </form>                                                                                                            
-           											<h3>Selection Parameters:</h3>	
+           											<h3 class="levelMeasurementHeadings">Selection Parameters:</h3>	
                                                    <div align="left" style="padding:0px 0px 6px 5px" >    <input id="selectYear" class="combobox"></div>
                                                        <div align="left" style="padding:0px 0px 4px 5px"  ><input id="selectSeason" class="combobox"></div>                                                   
                                                     <div style="margin-top:5px; font-size:9px; padding:0px 0px 2px 5px">Span of Years&nbsp;(Change in Groundwater Level Only)</div>
@@ -60,27 +60,32 @@
                                                     
                                                     
                                                  
-                                                    <h3>Show Layers:</h3>            
+                                                    <h3 class="levelMeasurementHeadings">Show Layers:</h3>            
                                         			<span class="layer_list" id = "activeLayers">
-                                                              <div><input type='checkbox' class='list_item' id='levelMeasurement' value=0 />Measurements</div> 
-                                                              <img id="dynamicPointsLegend" src="images/Dynamic_ChangePoints.png"></img>
+                                                              <div><input type='checkbox' class='list_item' id='levelMeasurement' value=0 /><label for='levelMeasurement'> Measurements</label></div> 
                                                               
-                                                              <div><input type='checkbox' class='list_item' id='levelContours' value=1 />Contours</div> 
-                                                               <img id="dynamicContoursLegend"></img>
-                                                              <div><input type='checkbox' class='list_item' id='levelRamp' value=2 />Color Ramp</div>      <img id="dynamicRampLegend"></img>
+                                                              
+                                                              <div><input type='checkbox' class='list_item' id='levelContours' value=1 /><label for='levelContours'> Contours</label></div> 
+                                                               
+                                                              <div><input type='checkbox' class='list_item' id='levelRamp' value=2 /><label for=levelRamp> Color Ramp</label></div>  
+                                                              
+                                                              <h3>Legend</h3>
+                                                              <h5 class="legendTitle">Measurements</h5> <img id="dynamicPointsLegend" class="boundaryLeg" src="images/Dynamic_ChangePoints.png"></img>
+                                                              <h5 class="legendTitle">Contours</h5> <img id="dynamicContoursLegend" class="boundaryLeg"></img>
+                                                              <h5 class="legendTitle">Color Ramp</h5> <img id="dynamicRampLegend" class="boundaryLeg"></img>
                                                     </span>
                                        
                          </div>                                                                                              
                          <div id="pane2" data-dojo-type="dijit/layout/AccordionPane" title="Base of Fresh Water">
 
-                                          <div><input type='checkbox' class='listB_item' id='layerB0CheckBox' value=0 />CA DOGGR Data </div>                                    
-                                          <div id="boundaryLeg"><img src="images/CA_DOGGER.PNG"></div><br/><br/>
-                                       	  <div><input type='checkbox' class='listB_item' id='layerB1CheckBox' value=1 />Water Resource Data </div>                                    
-                                          <div id="boundaryLeg"><img src="images/WR_Data.PNG"></div><br/><br/>
-                                          <div><input type='checkbox' class='listB_item' id='layerB2CheckBox' value=2 />BFW - BGS (ft)  </div>                                                                                                                 
-                                          <div id="boundaryLeg"><img src="images/Elev_BFG_BGS.PNG"></div><br/><br/>
-                                          <div><input type='checkbox' class='listB_item' id='layerB5CheckBox' value=5 />BFW - MSL (ft)  </div>                                                                                                                               
-                                          <div id="boundaryLeg"><img src="images/Elev_BFg_MSL.PNG"></div>
+                                          <div><input type='checkbox' class='list_item' id='layerB0CheckBox' value=0 />CA DOGGR Data </div>                                    
+                                          <div class="boundaryLeg"><img src="images/CA_DOGGER.PNG"></div><br/><br/>
+                                       	  <div><input type='checkbox' class='list_item' id='layerB1CheckBox' value=1 />Water Resource Data </div>                                    
+                                          <div class="boundaryLeg"><img src="images/WR_Data.PNG"></div><br/><br/>
+                                          <div><input type='checkbox' class='list_item' id='layerB2CheckBox' value=2 />BFW - BGS (ft)  </div>                                                                                                                 
+                                          <div class="boundaryLeg"><img src="images/Elev_BFG_BGS.PNG"></div><br/><br/>
+                                          <div><input type='checkbox' class='list_item' id='layerB5CheckBox' value=5 />BFW - MSL (ft)  </div>                                                                                                                               
+                                          <div class="boundaryLeg"><img src="images/Elev_BFg_MSL.PNG"></div>
                                           
                                           	
                                                 
@@ -94,32 +99,32 @@
                                     <input type='checkbox' id="extensometersCheck" value=0>
                                     <label for="extensometersCheck">Active Extensometers</label>
                                    </div>
-                                   <div id="boundaryLeg"><img src="images/ActiveExstensometers.PNG"></div>
+                                   <div class="boundaryLeg"><img src="images/ActiveExstensometers.PNG"></div>
                                    <div>
                                     <input type='checkbox' id="subsidenceCheck" value=1>
                                     <label for="subsidenceCheck">Cumulative Subsidence</label>
                                    </div>
-                                   <div id="boundaryLeg"><img src="images/CGPSCumlativeSub.PNG"></div>
+                                   <div class="boundaryLeg"><img src="images/CGPSCumlativeSub.PNG"></div>
                                    <div>
                                     <input type='checkbox' id="trendsCheck" value=2>
                                     <label for="trendsCheck">Trends</label>
                                    </div>                                               
-                                   <div id="boundaryLeg"><img src="images/CGPSTrends.PNG"></div>
+                                   <div class="boundaryLeg"><img src="images/CGPSTrends.PNG"></div>
                                    <div>
                                     <input type='checkbox' id="historicChangeWells" value=3>
                                     <label for="historicChangeWells">Historical Change Wells</label>
                                    </div>
-                                   <div id="boundaryLeg"><img src="images/HistoricalChangeWells.PNG"></div>
+                                   <div class="boundaryLeg"><img src="images/HistoricalChangeWells.PNG"></div>
                                    <div>
                                     <input type='checkbox' id="subsidenceLocation" value=4>
                                     <label for="subsidenceLocation">Reported Subsidence Location</label>
                                    </div>
-                                   <div id="boundaryLeg"><img src="images/ReportedSubLocation.PNG"></div>
+                                   <div class="boundaryLeg"><img src="images/ReportedSubLocation.PNG"></div>
                                    <div>
                                     <input type='checkbox' id="largeAreasSubsidence" value=5>
                                     <label for="largeAreasSubsidence">Large Areas of Subsidence</label>
                                    </div>                                               
-                                   <div id="boundaryLeg"><img src="images/LargeAreasofSub.PNG"></div>
+                                   <div class="boundaryLeg"><img src="images/LargeAreasofSub.PNG"></div>
                                    <div>
                                     <input type='checkbox' id="estimatedSubsidence" value=6>
                                     <label for="estimatedSubsidence">Estimated Potential Subsidence</label>
@@ -131,12 +136,12 @@
                                     <input type='checkbox' id="asCheck1" value=0>
                                     <label for="asCheck1">Agencies Involved in Conjunctive Management</label>
                                    </div>
-                                   <div id="boundaryLeg"><img src="images/AgenciesConjunctiveManagement.PNG"></div>
+                                   <div class="boundaryLeg"><img src="images/AgenciesConjunctiveManagement.PNG"></div>
                                    <div>
                                     <input type='checkbox' id="asCheck2" value=1>
                                     <label for="asCheck2">Groundwater Basin Available Storage<br/>&nbsp&nbsp&nbsp&nbsp&nbsp 1921 to 2014</label>
                                    </div>
-                                   <div id="boundaryLeg"><img src="images/GroundwaterBasinAvailableStorage.PNG"></div>
+                                   <div class="boundaryLeg"><img src="images/GroundwaterBasinAvailableStorage.PNG"></div>
         
                                    
                                    
@@ -144,7 +149,7 @@
                                     <input type='checkbox' id="asCheck3" value=2>
                                     <label for="asCheck3">Water Level Change from Storage<br/>&nbsp&nbsp&nbsp&nbsp&nbsp 1921 to 2014</label>
                                    </div>                                               
-                                   <div id="boundaryLeg"><img src="images/EstAvailableStorage_Ramp.PNG"></div>
+                                   <div class="boundaryLeg"><img src="images/EstAvailableStorage_Ramp.PNG"></div>
                             </div> 	
                 	
                     
@@ -161,16 +166,16 @@
                    <br/>
                   
                           <div><input type='checkbox' class='list_item' id='layer0CheckBox' value=0 />County Boundaries </div>                                    
-                          <div id="boundaryLeg"><img src="images/countyBoundary_Leg.PNG" ></div>
+                          <div class="boundaryLeg"><img src="images/countyBoundary_Leg.PNG" ></div>
                           <br>
                           <div><input type='checkbox' class='list_item' id='layer1CheckBox' value=1 />Groundwater Basins</div>                                           
-                          <div id="boundaryLeg"><img src="images/Bulletin118GWbasins.PNG" ></div>
+                          <div class="boundaryLeg"><img src="images/Bulletin118GWbasins.PNG" ></div>
                           <br>
                           <div><input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />GWMP Statewide</div>                                           
-                          <div id="boundaryLeg"><img src="images/GWMP_Statewide.PNG" ></div>
+                          <div class="boundaryLeg"><img src="images/GWMP_Statewide.PNG" ></div>
                           <br>
                           <div><input type='checkbox' class='list_item' id='layer3CheckBox' value=3 />Basin Priorty Rank</div> 
-                          <div id="boundaryLeg"><img src="images/basinPriorityRank.PNG" ></div>
+                          <div class="boundaryLeg"><img src="images/basinPriorityRank.PNG" ></div>
                </div>
               <div id="tab3" data-dojo-type="dijit/layout/ContentPane" title="&nbsp;&nbsp;Disclaimer&nbsp;&nbsp;" data-dojo-props="selected:true"  >
             		

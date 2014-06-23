@@ -173,7 +173,10 @@ body{
 
 	
 }
-
+.levelMeasurementHeadings{
+	margin-bottom:4px;
+	
+}
 #homeButton {
       position: absolute;
       top: 95px;
@@ -182,18 +185,20 @@ body{
     }
 
 	
-}
 
-.listB_item{
-	padding:4px;
+
+
+.legendTitle{
+	margin-top:5px;
+	font-size:12px;
+	margin-bottom:0px;
+	margin-left:15px;
 	
 }
 
-#boundaryLeg{
-	padding:4px;
-	
+.boundaryLeg{
+	margin-left:20px;
 }
-
 
 #pane1{
 	font-size:15px;
@@ -271,9 +276,7 @@ body{
 	
 }
 
-#boundaryLeg{
-	margin-left:20px;
-}
+
 
 #legendDiv{
 	
@@ -305,7 +308,7 @@ body {
 }
 
 .list_item{
-	margin-left:5px;
+	margin-left:25px;
 }
 .poplist{
   list-style-type: none;
