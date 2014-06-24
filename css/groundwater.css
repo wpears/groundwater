@@ -1,3 +1,9 @@
+.loadingImg{
+  width:16px;
+  height:16px;
+  margin:0 -18px 0 2px;
+}
+
 #centerPane{
   height: 100%;
   width: 83%;
@@ -314,7 +320,10 @@ body {
 	height: 60px;
 }
 
-.list_item{
+.layerCheck{
+  margin-left:25px;
+}
+.serviceRadio{
 	margin-left:25px;
 }
 .poplist{

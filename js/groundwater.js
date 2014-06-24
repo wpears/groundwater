@@ -109,6 +109,10 @@ esri.config.defaults.io.corsDetection = false;
     var elevRadio = dom.byId("radio2");
     var changeRadio = dom.byId("radio3");
 
+    var measurementCheck = dom.byId("levelMeasurement");
+    var contoursCheck = dom.byId("levelContours");
+    var rampCheck = dom.byId("levelRamp");
+
     var checks = query("#activeLayers input");
     var pointsLegend = dom.byId("dynamicPointsLegend");
     var contoursLegend = dom.byId("dynamicContoursLegend");
@@ -212,6 +216,22 @@ window.iw=infoWindow;
         on.emit(dom.byId("pane1_button"),"click",{bubbles:true,cancelable:true});
       },300);
 
+    }
+
+
+
+    function addLoading(check){
+      var img = DOC.createElement('img')
+      img.className = "loadingImg";
+      img.src = "images/loading.gif";
+      check.parentNode.insertBefore(img,check)
+    }
+
+    function removeLoading(check){
+      var p = check.parentNode;
+      var first = p.firstChild;
+      if(first.tagName === 'IMG')
+        p.removeChild(first)
     }
        
 
@@ -365,6 +385,7 @@ var spanDijit = registry.byId("selectSpan");
       var url = prefix+type+name+suffix;
       var layer = new ArcGISDynamicMapServiceLayer(url,
             {"imageParameters": imageParameters})
+      layer.on('update-end',layerUpdateEnd);
       layer.suspend();
       layers.push(layer)
       staticServices[type+name] = layer;
@@ -614,6 +635,38 @@ function spanChange(){
   inputQuery();
 }
 
+function checkHandler(e){
+  var check = e.target;
+  if(check.checked) addLoading(check);
+  else removeLoading(check);
+
+  inputQuery();
+}
+
+function layerUpdateEnd(e){
+  var layer = e.target;
+  if(layer){
+    toggleLoading(getCheckFromLayer(layer))
+  }
+}
+
+function getCheckFromLayer(layer){
+  var arr = layer.url.split('_');
+  var type = arr[arr.length-1].split('/')[0];
+  switch(type){
+    case "Points":
+      return measurementCheck;
+    case "Contours":
+      return contoursCheck;
+    case "Ramp":
+      return rampCheck;
+  }
+}
+
+function toggleLoading(check){
+  if(check.checked) removeLoading(check);
+}
+
 function attachInputHandlers(){
   on(levelComboYr,"change",yearChange)
   on(levelComboSeason,"change",inputQuery)
@@ -623,9 +676,9 @@ function attachInputHandlers(){
   on(elevRadio,"change",clearAndQuery)
   on(changeRadio,"change",clearAndQuery)
 
-  on(dom.byId("levelMeasurement"),"change", inputQuery)
-  on(dom.byId("levelContours"),"change", inputQuery)
-  on(dom.byId("levelRamp"),"change", inputQuery)
+  on(measurementCheck,"change", checkHandler)
+  on(contoursCheck,"change", checkHandler)
+  on(rampCheck,"change", checkHandler)
   console.log("Clear and query might have cascading effects")
 }
 
@@ -640,6 +693,10 @@ function forEach(arr,fn){
 
 // Add layers to map
 map.addLayers(layers);
+
+
+
+
 
 
 
