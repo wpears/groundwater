@@ -98,6 +98,7 @@ esri.config.defaults.io.corsDetection = false;
     var arro = dom.byId("arro");
     var showing = 0;
     var oldIE =(DOC.all&&!W.atob)?true:false;
+    var addDijit;
 
     var noLayers = [-1];
     var prefix = "http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_";
@@ -112,8 +113,8 @@ esri.config.defaults.io.corsDetection = false;
     var measurementCheck = dom.byId("levelMeasurement");
     var contoursCheck = dom.byId("levelContours");
     var rampCheck = dom.byId("levelRamp");
-
     var checks = query("#activeLayers input");
+
     var pointsLegend = dom.byId("dynamicPointsLegend");
     var contoursLegend = dom.byId("dynamicContoursLegend");
     var rampLegend = dom.byId("dynamicRampLegend");
@@ -154,7 +155,7 @@ esri.config.defaults.io.corsDetection = false;
   var infoWindow = new InfoWindow('infoWindow');
   infoWindow.startup();
   infoWindow.setTitle('<a id="zoomLink" action="javascript:void(0)">Information at this Point</a>')
-window.iw=infoWindow;
+
   // Create the map. The first argument is either an HTML element (usually a div) or, as in this case,
   // the id of an HTML element as a string. See https://developers.arcgis.com/en/javascript/jsapi/map-amd.html#map1
   // for the full list of options that can be passed in the second argument.
@@ -202,22 +203,8 @@ window.iw=infoWindow;
       "pane1" : "Measurements of Depth Below Ground and Groundwater Elevation, and Groundwater Change",
       "pane2" : "Base of Fresh Groundwater",
       "pane3" : "Subsidence",
-	  "pane4" : "Estimated Available Storage"
+	    "pane4" : "Estimated Available Storage"
     };
-    function hookRightPane(){
-      var acc = registry.byId("leftAccordion");
-      function populate(e){
-        tabNode.innerHTML = accordionTabs[acc.selectedChildWidget.id]
-      }
-      on(acc.domNode,".dijitAccordionTitle:click",populate);
-      populate();
-      DOC.body.style.visibility="visible";
-      W.setTimeout(function(){
-        on.emit(dom.byId("pane1_button"),"click",{bubbles:true,cancelable:true});
-      },300);
-
-    }
-
 
 
     function addLoading(check){
@@ -312,11 +299,20 @@ function setSpanData(year){
 function setYearData(radio){
   if(radio === changeRadio){
     levelStoreYr.setData(changeYears);
-    levelComboYr.setValue(changeYears[changeYears.length-1].year);
+    if(!checkYear(selectYear.value,changeYears))
+      levelComboYr.setValue(changeYears[changeYears.length-1].year);
   }else{
     levelStoreYr.setData(depthYears);
-    levelComboYr.setValue(depthYears[depthYears.length-1].year);
+    if(!checkYear(selectYear.value,depthYears))
+      levelComboYr.setValue(depthYears[depthYears.length-1].year);
   }
+}
+
+function checkYear(year,years){
+  for(var i=0;i<years.length;i++){
+    if(years[i].year == year) return 1;
+  }
+  return 0;
 }
 
 
@@ -563,23 +559,6 @@ function enableLayer(input){
   input.parentNode.style.opacity="1"
 }
 
-function showLegend(id){
-	if(id === "radio1"){
-    pointsLegend.src = "images/Dynamic_DepthPoints.png";
-	contoursLegend.src= "images/Dynamic_DepthContour.png";
-	rampLegend.src= "images/Dynamic_DepthRamp.png";
-	}else if (id === "radio2"){
-    pointsLegend.src = "images/Dynamic_ElevationPoints.png"
-	contoursLegend.src= "images/Dynamic_ElevationContour.png";
-	rampLegend.src= "images/Dynamic_ElevationRamp.png";
-
-	}else{
-    pointsLegend.src = "images/Dynamic_ChangePoints.png";
-	contoursLegend.src= "images/Dynamic_ChangeContours.png";
-	rampLegend.src= "images/Dynamic_ChangeRamp.png";
-
-	}
-}
 
 
 function showLayer(serviceName,layerId){
@@ -612,6 +591,12 @@ function clearAllLayers(){
   })
 }
 
+function uncheckLayers(){
+  checks.forEach(function(v){
+    v.checked =false;
+  })
+}
+
 
 function getCheckedServices(){
   return checks.map(function(node,i){
@@ -623,6 +608,24 @@ function getServicesFromChecks(checkedArray){
   return checkedArray.map(function(checked,i){
         return serviceNames[serviceNames.length-i-1]
     })
+}
+
+function showLegend(id){
+  if(id === "radio1"){
+    pointsLegend.src = "images/Dynamic_DepthPoints.png";
+  contoursLegend.src= "images/Dynamic_DepthContour.png";
+  rampLegend.src= "images/Dynamic_DepthRamp.png";
+  }else if (id === "radio2"){
+    pointsLegend.src = "images/Dynamic_ElevationPoints.png"
+  contoursLegend.src= "images/Dynamic_ElevationContour.png";
+  rampLegend.src= "images/Dynamic_ElevationRamp.png";
+
+  }else{
+    pointsLegend.src = "images/Dynamic_ChangePoints.png";
+  contoursLegend.src= "images/Dynamic_ChangeContours.png";
+  rampLegend.src= "images/Dynamic_ChangeRamp.png";
+
+  }
 }
 
 
@@ -679,7 +682,6 @@ function attachInputHandlers(){
   on(measurementCheck,"change", checkHandler)
   on(contoursCheck,"change", checkHandler)
   on(rampCheck,"change", checkHandler)
-  console.log("Clear and query might have cascading effects")
 }
 
 
@@ -936,7 +938,7 @@ infoWindow.on('hide',function(){
     arro.style.backgroundPosition = "-32px -16px";
     if(oldIE){
       for(;i<j;i++){
-        if(movers[i] === dataPane)
+        if(movers[i] === rp)
           fx.animateProperty({node:movers[i], duration:300, properties:{marginRight:0}}).play();
         else fx.animateProperty({node:movers[i], duration:300, properties:{marginRight:285}}).play();
       }
@@ -952,7 +954,7 @@ infoWindow.on('hide',function(){
     arro.style.backgroundPosition = "-96px -16px";
     if(oldIE){
       for(;i<j;i++){
-      if(movers[i] === dataPane)
+      if(movers[i] === rp)
         fx.animateProperty({node:movers[i], duration:250, properties:{marginRight:-285}}).play();
       else fx.animateProperty({node:movers[i], duration:250, properties:{marginRight:0}}).play();
       }
@@ -970,6 +972,29 @@ infoWindow.on('hide',function(){
 
   on(closeButton,"mousedown", closeToggle);
 
+
+  function hookRightPane(){
+    accDijit = registry.byId("leftAccordion");
+
+    on(accDijit.domNode,".dijitAccordionTitle:click",accTabClick);
+
+    populate();
+    DOC.body.style.visibility="visible";
+
+    W.setTimeout(function(){
+      on.emit(dom.byId("pane1_button"),"click",{bubbles:true,cancelable:true});
+    },300);
+  }
+
+  function populate(e){
+    tabNode.innerHTML = accordionTabs[accDijit.selectedChildWidget.id]
+  }
+
+  function accTabClick(e){
+    clearAllLayers();
+    uncheckLayers();
+    populate(e);
+  }
 
 
 

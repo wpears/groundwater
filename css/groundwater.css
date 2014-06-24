@@ -139,7 +139,7 @@ body{
 	background:#E2F0F1;
 }
 
-#leftPaneHeader{
+#leftPaneHeader >a{
 	font-size:18px;
 	font-weight:bold;
 	text-decoration:none;
