@@ -165,8 +165,6 @@ body{
 }
 #tab3{
 	font-size:10px;
-	
-	
 }
 
 #disclaimerHeadings{
@@ -182,13 +180,11 @@ body{
 }
 
 #homeButton {
-      position: absolute;
-      top: 95px;
-      left: 20px;
-      z-index: 50;
-    }
-
-	
+  position: absolute;
+  top: 95px;
+  left: 20px;
+  z-index: 50;
+}
 
 .checkBox{
 	margin-left:5px;
@@ -285,8 +281,6 @@ body{
 	background-color:#E8E8E8;
 	border:ridge;
 	elevation:above;
-	
-	
 }
 
 

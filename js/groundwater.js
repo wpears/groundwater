@@ -98,6 +98,32 @@ esri.config.defaults.io.corsDetection = false;
     var arro = dom.byId("arro");
     var showing = 0;
     var oldIE =(DOC.all&&!W.atob)?true:false;
+
+    var noLayers = [-1];
+    var prefix = "http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_";
+    var suffix = "/MapServer";
+    var serviceTypes = ["Change","Elevation","Depth"];
+    var serviceNames = ["_Ramp","_Contours","_Points"];
+
+    var depthRadio = dom.byId("radio1");
+    var elevRadio = dom.byId("radio2");
+    var changeRadio = dom.byId("radio3");
+
+    var checks = query("#activeLayers input");
+    var pointsLegend = dom.byId("dynamicPointsLegend");
+    var contoursLegend = dom.byId("dynamicContoursLegend");
+    var rampLegend = dom.byId("dynamicRampLegend");
+
+    var totalServices = serviceTypes.length*serviceNames.length;
+    var loadedServices = 0;
+
+    var staticServices = {};
+    var visibleServiceUrls = {};
+    var identifyTasks = {};
+    var changeSpans;
+    var changeYears=[];
+    var depthYears=[];
+    var imageParameters = new ImageParameters({layerIds:[-1],layerOption:ImageParameters.LAYER_OPTION_SHOW});
     
 
     if(oldIE) fx = require("dojo/_base/fx", function(fx){return fx});
@@ -200,9 +226,19 @@ function buildChangeYears(layerInfos){
   })
 
   for(var year in yearObj){
+    changeYears.push({"year":year})
     yearObj[year].sort(sortSpans);
   }
+  changeYears.sort(sortYears)
   return yearObj;
+}
+
+function buildDepthYears(layerInfos){
+  var yearReg = /\d{4}/;
+  forEach(layerInfos,function(info,i){
+    depthYears.push({"year":info.name.match(yearReg)})
+  });
+  return depthYears.sort(sortYears);
 }
 
 
@@ -234,15 +270,35 @@ function makeSpanPhrase(start, end){
   return start+" to "+end;
 }
 
-function sortSpans(a,b){
-  return a.span-b.span;
+function sortObj(a,b,key){
+  return a[key]-b[key];
 }
 
+function sortSpans(a,b){
+  return sortObj(a,b,"span")
+}
+function sortYears(a,b){
+  return sortObj(a,b,"year")
+}
+
+
 function setSpanData(year){
-  var years = changeYears[year];
+  var years = changeSpans[year];
   levelStoreSpan.setData(years)
   levelComboSpan.setValue(years[0].span);
 }
+
+
+function setYearData(radio){
+  if(radio === changeRadio){
+    levelStoreYr.setData(changeYears);
+    levelComboYr.setValue(changeYears[changeYears.length-1].year);
+  }else{
+    levelStoreYr.setData(depthYears);
+    levelComboYr.setValue(depthYears[depthYears.length-1].year);
+  }
+}
+
 
 
 //essentially copy/pasted from the service, then massaged in non-Bill format (everyone hates the trailing p)
@@ -250,8 +306,7 @@ function setSpanData(year){
 
 
 var levelStoreYr = new Memory({
-  data: [
-  ]
+  data: []
 });
 
 var levelStoreSeason = new Memory({
@@ -269,9 +324,9 @@ var levelComboYr = new ComboBox({
         id: "selectYear",
         name: "Year",
         style:{width: "100px"},
-        value: "2012",
+        value: "",
         store: levelStoreYr,
-        searchAttr: "name"
+        searchAttr: "year"
     },"selectYear");
 
 var levelComboSeason = new ComboBox({
@@ -287,21 +342,16 @@ var levelComboSpan= new ComboBox({
         id: "selectSpan",
         name: "Comparison Period",
         style:{width: "125px", align:"center"},
-        value: "2002 to 2012",
+        value: "",
         store: levelStoreSpan,
         searchAttr: "span"
     }, "selectSpan");
 
-//Set variables for queries in accordian panes
+var selectSeason=dom.byId("selectSeason");
+var selectYear = dom.byId("selectYear");
+var selectSpan = dom.byId("selectSpan");
+var spanDijit = registry.byId("selectSpan");
 
-
-  var staticServices = {};
-  var visibleServiceUrls = {};
-  var identifyTasks = {};
-  var changeYears;
-  //Use the ImageParameters to set the visibleLayerIds layers in the map service during ArcGISDynamicMapServiceLayer construction.
-  var imageParameters = new ImageParameters({layerIds:[-1],layerOption:ImageParameters.LAYER_OPTION_SHOW});
-  //layerOption can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
 
 
   makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", "#tab2");
@@ -309,31 +359,6 @@ var levelComboSpan= new ComboBox({
   makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer","#pane3")
   makeService("http://mrsbmweb21157/arcgis/rest/services/GGI/Estimated_Available_Storage/MapServer","#pane4")
 
-  var noLayers = [-1];
-  var prefix = "http://mrsbmweb21157/arcgis/rest/services/GGI/GIC_";
-  var suffix = "/MapServer";
-  var serviceTypes = ["Change","Elevation","Depth"];
-  var serviceNames = ["_Ramp","_Contours","_Points"];
-
-  var depthRadio = dom.byId("radio1");
-  var elevRadio = dom.byId("radio2");
-  var changeRadio = dom.byId("radio3");
-
-
-  var selectSeason=dom.byId("selectSeason");
-  var selectYear = dom.byId("selectYear");
-  var selectSpan = dom.byId("selectSpan");
-  var spanDijit = registry.byId("selectSpan");
-
-  var checks = query("#activeLayers input");
-  var pointsLegend = dom.byId("dynamicPointsLegend");
-  var contoursLegend = dom.byId("dynamicContoursLegend");
-  var rampLegend = dom.byId("dynamicRampLegend");
-
-
-
-var totalServices = serviceTypes.length*serviceNames.length;
-var loadedServices = 0;
 
   forEach(serviceTypes,function(type){
     forEach(serviceNames,function(name){
@@ -351,14 +376,17 @@ var loadedServices = 0;
 
   function initializeLayers(layer,key){
     if(key==="Change_Points"){
-      changeYears = buildChangeYears(layer.layerInfos);
-      setSpanData("2012");
+      changeSpans = buildChangeYears(layer.layerInfos);
+      
     }else if(key==="Depth_Points"){
-
+      depthYears = buildDepthYears(layer.layerInfos);
     }
     loadedServices++;
-    if(loadedServices===totalServices)
+    if(loadedServices===totalServices){
+      setYearData(changeRadio);
       inputQuery();
+      attachInputHandlers();
+    }
   }
 
  //Checkbox controls for pane 1,4
@@ -455,13 +483,10 @@ function matchLayer(layerInfos,season,year,span){
   }else{
     reg = new RegExp("("+season+"|"+season[0]+").*"+year)
   }
-  console.log(reg)
   for(var i=0; i < layerInfos.length;i++){
-    console.log(layerInfos[i].name)
     if(reg.test(layerInfos[i].name))
       return i;
   }
-  console.log('through')
 }
 
 
@@ -485,6 +510,7 @@ function inputQuery(){
 function clearAndQuery(){
   showLegend(this.id)
   clearAllLayers();
+  setYearData(this);
   inputQuery();
 }
 
@@ -508,7 +534,7 @@ function toggleLayers(type,checkedServices){
 function disableLayer(input){
   input.disabled = true;
   input.checked = false;
-  input.parentNode.style.opacity="0.8"
+  input.parentNode.style.opacity="0.7"
 }
 
 function enableLayer(input){
@@ -588,19 +614,20 @@ function spanChange(){
   inputQuery();
 }
 
+function attachInputHandlers(){
+  on(levelComboYr,"change",yearChange)
+  on(levelComboSeason,"change",inputQuery)
+  on(levelComboSpan,"change",inputQuery)
 
+  on(depthRadio,"change",clearAndQuery)
+  on(elevRadio,"change",clearAndQuery)
+  on(changeRadio,"change",clearAndQuery)
 
-on(levelComboYr,"change",yearChange)
-on(levelComboSeason,"change",inputQuery)
-on(levelComboSpan,"change",spanChange)
-
-on(depthRadio,"change",clearAndQuery)
-on(elevRadio,"change",clearAndQuery)
-on(changeRadio,"change",clearAndQuery)
-
-on(dom.byId("levelMeasurement"),"change", inputQuery)
-on(dom.byId("levelContours"),"change", inputQuery)
-on(dom.byId("levelRamp"),"change", inputQuery)
+  on(dom.byId("levelMeasurement"),"change", inputQuery)
+  on(dom.byId("levelContours"),"change", inputQuery)
+  on(dom.byId("levelRamp"),"change", inputQuery)
+  console.log("Clear and query might have cascading effects")
+}
 
 
 
