@@ -436,9 +436,9 @@ var spanDijit = registry.byId("selectSpan");
     for (var i = 0; i < inputCount; i++) {
       if (inputs[i].checked) {
         visibleLayerIds.push(inputs[i].value);
-        addLayerInfo(service,i)
+      //  addLayerInfo(service,i)
       }else{
-        removeLayerInfo(service,i)
+     //   removeLayerInfo(service,i)
       }
     }
     if(visibleLayerIds.length === 1){
@@ -577,7 +577,7 @@ function showLayer(serviceName,layerId){
   var service = staticServices[serviceName];
     service.resume();
     service.setVisibleLayers([layerId])
-    addLayerInfo(service,layerId)
+    //addLayerInfo(service,layerId)
     addVisibleUrl(service.url,service)
 }
 
@@ -586,7 +586,7 @@ function hideLayer(serviceName,layerId){
   if(!service.suspended){
     service.setVisibleLayers(noLayers)
     service.suspend();
-    removeLayerInfo(service,layerId)
+  //  removeLayerInfo(service,layerId)
     removeVisibleUrl(service.url);
   }
 }
@@ -988,7 +988,7 @@ infoWindow.on('hide',function(){
   function hookRightPane(){
     accDijit = registry.byId("leftAccordion");
     tabContainer = registry.byId("tabContainer");
-    
+
     on(accDijit.domNode,".dijitAccordionTitle:click",accTabClick);
     on(tabContainer.domNode,".dijitTab:click",tabClick)
 
@@ -1028,15 +1028,22 @@ infoWindow.on('hide',function(){
 
   function tabClick(e){
       populateFromTab();
+      resetDataHeight();
   }
 
   function accTabClick(){
     clearAllLayers();
     uncheckLayers();
     populateFromAcc();
+    resetDataHeight();
   }
 
+  function resetDataHeight (){
+    layerNode.style.height = DOC.documentElement.offsetHeight - 134 + "px"
+  }
+  resetDataHeight();
 
+on(W,"resize",resetDataHeight)
 
 
 

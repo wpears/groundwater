@@ -1,3 +1,6 @@
+label:hover,.serviceRadio,.layerCheck{
+  cursor:pointer;
+}
 .loadingImg{
   width:16px;
   height:16px;
@@ -30,7 +33,7 @@
 }
 
 #dataCon{
-  overflow-y:scroll;
+  overflow:hidden;
   position:relative;
   height:100%;
 }
@@ -39,15 +42,43 @@
   width:85%;
   margin-top:20px;
   margin-left:27px;
-  border-bottom:2px dashed #45fe99;
   padding-bottom:10px;
+  border-bottom:2px dashed #45fe99;
 }
 
 #layerNode{
-  width:85%;
-  margin-top:20px;
+  margin-top:5px;
   margin-left:27px;
   word-wrap:break-word;
+  overflow-y:scroll;
+  
+}
+
+#downloadNode{
+  border-top:2px dashed #45fe99;
+  width:85%;
+  height:30px;
+  padding-top:25px;
+  margin:0px 0px 10px 27px;
+  text-align:center;
+}
+#downloadLink:active{
+  line-height:29px;
+}
+#downloadLink:hover{
+  box-shadow:1px 1px 1px 0 #4cff4c;
+}
+
+#downloadLink{
+  text-decoration:none;
+  background-color:#98ff98;
+  border-radius:6px;
+  color:white;
+  font-size:20px;
+  font-weight:bolder;
+  font-style:italic;
+  text-shadow:1px 1px 0 #4cff4c;
+  padding:3px 5px;
 }
 
 #closeRP{
