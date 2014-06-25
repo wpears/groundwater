@@ -119,6 +119,8 @@ esri.config.defaults.io.corsDetection = false;
     var contoursLegend = dom.byId("dynamicContoursLegend");
     var rampLegend = dom.byId("dynamicRampLegend");
 
+    var tabContainer;
+
     var totalServices = serviceTypes.length*serviceNames.length;
     var loadedServices = 0;
 
@@ -199,12 +201,17 @@ esri.config.defaults.io.corsDetection = false;
     identifyParameters.tolerance = 3;
     identifyParameters.returnGeometry = false;
 
-    var accordionTabs = {
-      "pane1" : "Measurements of Depth Below Ground and Groundwater Elevation, and Groundwater Change",
-      "pane2" : "Base of Fresh Groundwater",
-      "pane3" : "Subsidence",
-	    "pane4" : "Estimated Available Storage"
+    var serviceDescriptions = {
+      Depth:"Depth of water below ground.",
+      Elevation:"Elevation of groundwater relative to NAVD88",
+      Change:"Change in groundwater levels over various time spans."
     };
+
+    var radioNames = {
+      Depth : "Depth Below Ground",
+      Elevation : "Groundwater Elevation",
+      Change : "Change in Groundwater Level"
+    }
 
 
     function addLoading(check){
@@ -219,8 +226,7 @@ esri.config.defaults.io.corsDetection = false;
       var first = p.firstChild;
       if(first.tagName === 'IMG')
         p.removeChild(first)
-    }
-       
+    }      
 
 
 
@@ -416,6 +422,7 @@ var spanDijit = registry.byId("selectSpan");
     layers.push(service);
     identifyTasks[url] = new IdentifyTask(url);
     on(query(id+" input"), "change", function(){updateLayerVisibility(service,this.parentNode.parentNode)});
+    service.on("load",function(e){serviceDescriptions[id.slice(1)] = e.layer.description})
   }
 
 
@@ -506,16 +513,20 @@ function matchLayer(layerInfos,season,year,span){
   }
 }
 
+function getRadio(){
+    var type = depthRadio.checked === true
+             ? "Depth"
+             : elevRadio.checked
+               ? "Elevation"
+               : "Change"
+             ;
+    return type;
+}
 
 //Query builder for Groundwater Level Change
 
 function inputQuery(){
-  var type = dom.byId("radio1").checked === true
-             ? "Depth"
-             : dom.byId("radio2").checked
-               ? "Elevation"
-               : "Change"
-             ;
+  var type = getRadio();
   if(type === "Change") spanDijit.attr("disabled",false);
   else spanDijit.attr("disabled",true);
 
@@ -525,6 +536,7 @@ function inputQuery(){
 }
 
 function clearAndQuery(){
+  populateFromAcc();
   showLegend(this.id)
   clearAllLayers();
   setYearData(this);
@@ -975,25 +987,53 @@ infoWindow.on('hide',function(){
 
   function hookRightPane(){
     accDijit = registry.byId("leftAccordion");
-
+    tabContainer = registry.byId("tabContainer");
+    
     on(accDijit.domNode,".dijitAccordionTitle:click",accTabClick);
+    on(tabContainer.domNode,".dijitTab:click",tabClick)
 
-    populate();
+    populateFromTab();
     DOC.body.style.visibility="visible";
 
     W.setTimeout(function(){
       on.emit(dom.byId("pane1_button"),"click",{bubbles:true,cancelable:true});
+      on.emit(closeButton, "mousedown",{bubbles:true,cancelable:true})
     },300);
   }
 
-  function populate(e){
-    tabNode.innerHTML = accordionTabs[accDijit.selectedChildWidget.id]
+  function populateFromTab(){
+    var tab = tabContainer.selectedChildWidget;
+    if(tab.id === "tab1"){
+      populateFromAcc();
+    }else if(tab.id === "tab2"){
+      tabNode.innerHTML = tab.title;
+      layerNode.innerHTML = serviceDescriptions.tab2
+    }else if(tab.id === "tab3"){
+      tabNode.innerHTML = '';
+      layerNode.innerHTML = '';
+    }
   }
 
-  function accTabClick(e){
+  function populateFromAcc(){
+    var pane = accDijit.selectedChildWidget;
+    if(pane.id === "pane1"){
+      var type = getRadio();
+      tabNode.innerHTML = radioNames[type]
+      layerNode.innerHTML = serviceDescriptions[type]
+    }else{
+      tabNode.innerHTML = pane.title;
+      layerNode.innerHTML = serviceDescriptions[pane.id]
+    }
+  }
+
+  function tabClick(e){
+      populateFromTab();
+  }
+
+  function accTabClick(){
     clearAllLayers();
     uncheckLayers();
-    populate(e);
+    populateFromAcc();
   }
 
 

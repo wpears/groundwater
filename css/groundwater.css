@@ -47,6 +47,7 @@
   width:85%;
   margin-top:20px;
   margin-left:27px;
+  word-wrap:break-word;
 }
 
 #closeRP{
@@ -221,6 +222,10 @@ body{
 
 .dijitInputField.dijitInputContainer.dijitReset{
   padding-left: 5px;
+}
+.dijitTab{
+  width:85px;
+  text-align: center;
 }
 #pane4{
 	font-size:15px;
