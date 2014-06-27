@@ -5,6 +5,7 @@
 require([
   "esri/map",
   "esri/geometry/Extent",
+  "esri/geometry/ScreenPoint",
   "esri/layers/ArcGISDynamicMapServiceLayer",
   "esri/layers/FeatureLayer",
   "esri/dijit/Scalebar",
@@ -39,12 +40,14 @@ require([
   "esri/tasks/IdentifyTask",
   "esri/tasks/IdentifyParameters",
 
+
   "require"
   ], 
 
 function(
    Map,
    Extent,
+   ScreenPoint,
    ArcGISDynamicMapServiceLayer,
    FeatureLayer,
    Scalebar,
@@ -90,6 +93,7 @@ esri.config.defaults.io.corsDetection = false;
     var W = window;
     var DOC = document;
     var layers = [];
+    var mapPane = dom.byId("centerPane")
     var movers = query(".mov");
     var rp = dom.byId('rp');
     var tabNode = dom.byId('tabNode');
@@ -163,7 +167,7 @@ esri.config.defaults.io.corsDetection = false;
   // for the full list of options that can be passed in the second argument.
     
 
-	var map = new Map("centerPane", {
+	var map = new Map(mapPane, {
       basemap : "topo",
 	    extent:initialExtent,
       infoWindow:infoWindow,
@@ -171,6 +175,8 @@ esri.config.defaults.io.corsDetection = false;
 	    maxZoom:12,
 	
     });
+
+
             
 	var home= new HomeButton({
 	  map: map,
@@ -545,7 +551,7 @@ function clearAndQuery(){
 
 function toggleLayers(type,checkedServices){
   var services = getServicesFromChecks(checkedServices);
-  services.forEach(function(name,i){
+  forEach(services,function(name,i){
     var key = type+name;
     var layerId = getLayerId(type,key);
     if(layerId===undefined){
@@ -593,9 +599,9 @@ function hideLayer(serviceName,layerId){
 
 function clearAllLayers(){
   var checked = getCheckedServices();
-  serviceTypes.forEach(function(type){
+  forEach(serviceTypes,function(type){
     var services = getServicesFromChecks(checked);
-    services.forEach(function(name, i){
+    forEach(services,function(name, i){
       var key = type+name;
       var layerId = getLayerId(type,key);
       hideLayer(key,layerId)
@@ -604,7 +610,7 @@ function clearAllLayers(){
 }
 
 function uncheckLayers(){
-  checks.forEach(function(v){
+  forEach(checks,function(v){
     v.checked =false;
   })
 }
@@ -773,6 +779,8 @@ map.addLayers(layers);
  
   var mdX = 0;
   var mdY = 0;
+  var lastClick=0;
+  var wasDouble=0;
 
   var tabs = new TabContainer({style:"height:100%;"},'infoTabContainer');
   infoWindow.setContent(tabs.domNode)
@@ -782,16 +790,36 @@ infoWindow.on('hide',function(){
 })
 
 
-  map.on("mouse-down",function(e){
-    mdX = e.x;
-    mdY = e.y;
+  on(mapPane,"mousedown",function(e){
+    mdX = e.clientX;
+    mdY = e.clientY;
+    var now = new Date().getTime()
+    if(now - lastClick < 300){
+      fireZoom();
+    }
+    lastClick = now;
   });
 
-  map.on("mouse-up",function(e){
-    if(Math.abs(e.x-mdX)<10&&Math.abs(e.y-mdY)<10)
+  on(mapPane,"mouseup",function(e){
+    if(wasDouble){
+      return wasDouble = 0;
+    }
+    if(Math.abs(e.clientX-mdX)<10&&Math.abs(e.clientY-mdY)<10){
+      addEventCoordinates(e);
       runIdentify(e);
       setInfoPoint(e);
+    }
   })
+
+  function addEventCoordinates(e){
+    e.screenPoint = new ScreenPoint(e.offsetX,e.offsetY);
+    e.mapPoint = map.toMap(e.screenPoint)
+  }
+
+  function fireZoom(){
+    wasDouble = 1;
+    infoWindow.hide();
+  }
 
   function setInfoPoint(event){
     if(infoWindow.zoomHandler)
@@ -807,7 +835,7 @@ infoWindow.on('hide',function(){
     identifyParameters.mapExtent = map.extent;
     identifyParameters.width = map.width;
     identifyParameters.height = map.height;
-    tabs.getChildren().forEach(function(v){tabs.removeChild(v)});
+    forEach(tabs.getChildren(),function(v){tabs.removeChild(v)});
 
     for(var taskUrl in identifyTasks){
       if(!visibleServiceUrls[taskUrl]) continue;

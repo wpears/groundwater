@@ -254,7 +254,7 @@ body{
 .dijitInputField.dijitInputContainer.dijitReset{
   padding-left: 5px;
 }
-.dijitTab{
+#tabContainer .dijitTab{
   width:85px;
   text-align: center;
 }
