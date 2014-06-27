@@ -94,6 +94,7 @@ esri.config.defaults.io.corsDetection = false;
     var DOC = document;
     var layers = [];
     var mapPane = dom.byId("centerPane")
+    var svgLayer;
     var movers = query(".mov");
     var rp = dom.byId('rp');
     var tabNode = dom.byId('tabNode');
@@ -189,6 +190,8 @@ esri.config.defaults.io.corsDetection = false;
   //unstyled content on the first point click. This is a bug in the API.
   
       map.on("load", function(){
+      map.disableDoubleClickZoom();
+      svgLayer = dom.byId("centerPane_gc")
       infoWindow.resize(425,325);
       infoWindow.show(0,0);
       setTimeout(function(){infoWindow.hide()},0);
@@ -779,8 +782,9 @@ map.addLayers(layers);
  
   var mdX = 0;
   var mdY = 0;
-  var lastClick=0;
-  var wasDouble=0;
+  var lastClick = 0;
+  var wasDouble = 0;
+  var notMap = 0;
 
   var tabs = new TabContainer({style:"height:100%;"},'infoTabContainer');
   infoWindow.setContent(tabs.domNode)
@@ -793,33 +797,57 @@ infoWindow.on('hide',function(){
   on(mapPane,"mousedown",function(e){
     mdX = e.clientX;
     mdY = e.clientY;
-    var now = new Date().getTime()
-    if(now - lastClick < 300){
-      fireZoom();
-    }
+    var now = new Date().getTime();
+
+    if(now - lastClick < 300)
+      wasDouble = 1;
+    else
+      wasDouble = 0;
+
     lastClick = now;
+
+    if(e.target === svgLayer)
+      notMap = 0;
+    else
+      notMap = 1;
+
+    if(notMap && !wasDouble) //click on non-map elements in the map pane (infowindow, eg)
+      return;
+
+    if(wasDouble)
+      fireZoom(e);
+
   });
 
   on(mapPane,"mouseup",function(e){
+    if (notMap) return;
+
     if(wasDouble){
       return wasDouble = 0;
     }
+
     if(Math.abs(e.clientX-mdX)<10&&Math.abs(e.clientY-mdY)<10){
-      console.log(e)
+
       addEventCoordinates(e);
       runIdentify(e);
       setInfoPoint(e);
     }
   })
 
+
   function addEventCoordinates(e){
-    e.screenPoint = new ScreenPoint(e.offsetX,e.offsetY);
+    var  x = e.clientX - centerPane.offsetLeft -1;
+    var  y = e.clientY - centerPane.offsetTop -1;
+
+    e.screenPoint = new ScreenPoint(x,y);
     e.mapPoint = map.toMap(e.screenPoint)
   }
 
-  function fireZoom(){
-    wasDouble = 1;
+  function fireZoom(e){
+    addEventCoordinates(e)
+    lastClick = 0;
     infoWindow.hide();
+    map.centerAndZoom(e.mapPoint,map.getLevel()+1)
   }
 
   function setInfoPoint(event){
