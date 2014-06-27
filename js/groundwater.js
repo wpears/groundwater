@@ -805,6 +805,7 @@ infoWindow.on('hide',function(){
       return wasDouble = 0;
     }
     if(Math.abs(e.clientX-mdX)<10&&Math.abs(e.clientY-mdY)<10){
+      console.log(e)
       addEventCoordinates(e);
       runIdentify(e);
       setInfoPoint(e);
@@ -884,7 +885,7 @@ infoWindow.on('hide',function(){
   function getTitle(result,isChange){
     var name = result.layerName;
     var season = name.match(/S|F/);
-    if(season === "S") season = "Spring "
+    if(season[0] === "S") season = "Spring "
     else season = "Fall "
 
     if(isChange){
