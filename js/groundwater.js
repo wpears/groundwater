@@ -125,6 +125,7 @@ esri.config.defaults.io.corsDetection = false;
     var rampLegend = dom.byId("dynamicRampLegend");
 
     var tabContainer;
+    var currentAccPane;
 
     var totalServices = serviceTypes.length*serviceNames.length;
     var loadedServices = 0;
@@ -211,9 +212,6 @@ esri.config.defaults.io.corsDetection = false;
     identifyParameters.returnGeometry = false;
 
     var serviceDescriptions = {
-      Depth:"Depth of water below ground.",
-      Elevation:"Elevation of groundwater relative to NAVD88",
-      Change:"Change in groundwater levels over various time spans."
     };
 
     var radioNames = {
@@ -401,12 +399,14 @@ var spanDijit = registry.byId("selectSpan");
       layers.push(layer)
       staticServices[type+name] = layer;
       identifyTasks[url] = new IdentifyTask(url);
-      layer.on('load',function(evt){initializeLayers(evt.layer,type+name)});
+      layer.on('load',function(evt){initializeLayers(evt.layer,type,name)});
     })
   })
 
 
-  function initializeLayers(layer,key){
+  function initializeLayers(layer,type,name){
+    var key = type+name;
+    if(name==="_Points")serviceDescriptions[type] = layer.description;
     if(key==="Change_Points"){
       changeSpans = buildChangeYears(layer.layerInfos);
       
@@ -430,7 +430,7 @@ var spanDijit = registry.byId("selectSpan");
     service.suspend();
     layers.push(service);
     identifyTasks[url] = new IdentifyTask(url);
-    on(query(id+" input"), "change", function(){updateLayerVisibility(service,this.parentNode.parentNode)});
+    on(query(id+" input"), "click", function(){updateLayerVisibility(service,this.parentNode.parentNode)});
     service.on("load",function(e){serviceDescriptions[id.slice(1)] = e.layer.description})
   }
 
@@ -439,6 +439,7 @@ var spanDijit = registry.byId("selectSpan");
 
   function updateLayerVisibility (service,pane) {
     var inputs = query("input",pane);
+    console.log(service,pane,inputs)
     var inputCount = inputs.length;
     var visibleLayerIds = [-1]
     //in this application no layer is always on
@@ -545,7 +546,7 @@ function inputQuery(){
 }
 
 function clearAndQuery(){
-  populateFromAcc();
+  populateFromAcc(accDijit.selectedChildWidget);
   showLegend(this.id)
   clearAllLayers();
   setYearData(this);
@@ -612,9 +613,13 @@ function clearAllLayers(){
   })
 }
 
-function uncheckLayers(){
-  forEach(checks,function(v){
-    v.checked =false;
+function uncheckLayers(pane){
+  var paneChecks = query("input",pane.domNode)
+  forEach(paneChecks,function(v){
+    if(v.checked&&v.type=="checkbox"){
+      v.checked=false;
+      on.emit(v, "click",{bubbles:true,cancelable:true})
+    }
   })
 }
 
@@ -696,13 +701,13 @@ function attachInputHandlers(){
   on(levelComboSeason,"change",inputQuery)
   on(levelComboSpan,"change",inputQuery)
 
-  on(depthRadio,"change",clearAndQuery)
-  on(elevRadio,"change",clearAndQuery)
-  on(changeRadio,"change",clearAndQuery)
+  on(depthRadio,"click",clearAndQuery)
+  on(elevRadio,"click",clearAndQuery)
+  on(changeRadio,"click",clearAndQuery)
 
-  on(measurementCheck,"change", checkHandler)
-  on(contoursCheck,"change", checkHandler)
-  on(rampCheck,"change", checkHandler)
+  on(measurementCheck,"click", checkHandler)
+  on(contoursCheck,"click", checkHandler)
+  on(rampCheck,"click", checkHandler)
 }
 
 
@@ -1045,6 +1050,7 @@ infoWindow.on('hide',function(){
   function hookRightPane(){
     accDijit = registry.byId("leftAccordion");
     tabContainer = registry.byId("tabContainer");
+    currentAccPane = accDijit.selectedChildWidget;
 
     on(accDijit.domNode,".dijitAccordionTitle:click",accTabClick);
     on(tabContainer.domNode,".dijitTab:click",tabClick)
@@ -1061,7 +1067,7 @@ infoWindow.on('hide',function(){
   function populateFromTab(){
     var tab = tabContainer.selectedChildWidget;
     if(tab.id === "tab1"){
-      populateFromAcc();
+      populateFromAcc(accDijit.selectedChildWidget);
     }else if(tab.id === "tab2"){
       tabNode.innerHTML = tab.title;
       layerNode.innerHTML = serviceDescriptions.tab2
@@ -1071,8 +1077,7 @@ infoWindow.on('hide',function(){
     }
   }
 
-  function populateFromAcc(){
-    var pane = accDijit.selectedChildWidget;
+  function populateFromAcc(pane){
     if(pane.id === "pane1"){
       var type = getRadio();
       tabNode.innerHTML = radioNames[type]
@@ -1089,10 +1094,12 @@ infoWindow.on('hide',function(){
   }
 
   function accTabClick(){
+    var pane = accDijit.selectedChildWidget;
     clearAllLayers();
-    uncheckLayers();
-    populateFromAcc();
+    uncheckLayers(currentAccPane);
+    populateFromAcc(pane);
     resetDataHeight();
+    currentAccPane = pane;
   }
 
   function resetDataHeight (){
