@@ -66,7 +66,7 @@ label:hover,.serviceRadio,.layerCheck{
   line-height:29px;
 }
 #downloadLink:hover{
-  box-shadow:1px 1px 1px 0 #4cff4c;
+  box-shadow:0 1px 2px 1px #4cff4c;
 }
 
 #downloadLink{
@@ -78,7 +78,7 @@ label:hover,.serviceRadio,.layerCheck{
   font-weight:bolder;
   font-style:italic;
   text-shadow:1px 1px 0 #4cff4c;
-  padding:3px 5px;
+  padding:3px 8px;
 }
 
 #closeRP{
