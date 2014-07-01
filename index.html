@@ -19,7 +19,7 @@
 
                   
            <div id="leftPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left'" >
-                          <div id="leftPaneHeader" align="center"> <a target="_blank" href="http://portal-dev.water.ca.gov/groundwater/">Groundwater Information Center<br/> Map Interface</a></div>
+                          <div id="leftPaneHeader" align="center"> <a target="_blank" href="http://portal-dev.water.ca.gov/groundwater/">California Department of Water Resources<br/>Groundwater Information Center<br/> Map Interface</a></div>
                           <hr>          
                               
                           
@@ -27,7 +27,7 @@
                    
                <div id="tabContainer" data-dojo-type="dijit/layout/TabContainer" >
                    
-					<div id="tab1" data-dojo-type="dijit/layout/ContentPane" title="Data" data-dojo-props="selected:true">
+					<div id="tab1" data-dojo-type="dijit/layout/ContentPane"  title="Data" data-dojo-props="selected:true">
                    
                    <div data-dojo-type="dijit/layout/AccordionContainer" data-dojo-props="region:'center'"id="leftAccordion">
      						
@@ -52,12 +52,12 @@
                                                 	  
                                                 
                                                 </form>                                                                                                            
-           											<h3 class="levelMeasurementHeadings">Selection Parameters:</h3>	
-                                                   <div align="left" style="padding:0px 0px 6px 5px" >    <input id="selectYear" class="combobox"></div>
-                                                       <div align="left" style="padding:0px 0px 4px 5px"  ><input id="selectSeason" class="combobox"></div>                                                   
-                                                    <div style="margin-top:5px; font-size:9px; padding:0px 0px 2px 5px">Span of Years&nbsp;(Change in Groundwater Level Only)</div>
-                                                    <div align="left" style="padding:0px 0px 6px 5px" ><input id="selectSpan" class="combobox"></div>	
+           											<h3 class="levelMeasurementHeadings" style= "font:bolder">Selection Parameters:</h3>	
+                                                   <div align="left" style="padding:0px 0px 6px 5px" ><span><input id="selectYear" class="combobox">&nbsp;&nbsp;&nbsp;Select Year</span></div>
+                                                       <div align="left" style="padding:0px 0px 4px 5px"  ><span><input id="selectSeason" class="combobox">&nbsp;&nbsp;&nbsp;Select Season</span></div>                                                   
                                                     
+                                                    <div align="left" style="padding:0px 0px 6px 5px" ><span><input id="selectSpan" class="combobox">&nbsp;&nbsp;&nbsp;Select Period</span></div>	
+                                                    <div style="margin-top:-1px; font-size:9px; ">(Change in Groundwater Level Only)</div>
                                                     
                                                  
                                                     <h3 class="levelMeasurementHeadings">Show Layers:</h3>            
@@ -157,22 +157,22 @@
                     
                     </div>
    		 	   </div> 
-                <div id="tab2" data-dojo-type="dijit/layout/ContentPane" title="Boundaries" data-dojo-props="selected:true">
+                <div id="tab2" data-dojo-type="dijit/layout/ContentPane" title="Boundaries"  data-dojo-props="selected:true">
                    <br/>
                   
                           <div><input type='checkbox' class="checkBox" id='layer0CheckBox' value=0 />County Boundaries </div>                                    
                           <div class="boundaryLeg"><img src="images/countyBoundary_Leg.PNG" ></div>
                           <br>
-                          <div><input type='checkbox' class="checkBox" id='layer1CheckBox' value=1 />Groundwater Basins</div>                                           
+                          <div><input type='checkbox' class="checkBox" id='layer1CheckBox' value=1 />Bulletin 118 Groundwater Basins/Sub-Basins</div>                                           
                           <div class="boundaryLeg"><img src="images/Bulletin118GWbasins.PNG" ></div>
                           <br>
-                          <div><input type='checkbox' class="checkBox" id='layer2CheckBox' value=2 />GWMP Statewide</div>                                           
+                          <div><input type='checkbox' class="checkBox" id='layer2CheckBox' value=2 />Groundwater Management Plans</div>                                           
                           <div class="boundaryLeg"><img src="images/GWMP_Statewide.PNG" ></div>
                           <br>
-                          <div><input type='checkbox' class="checkBox" id='layer3CheckBox' value=3 />Basin Priorty Rank</div> 
+                          <div><input type='checkbox' class="checkBox" id='layer3CheckBox' value=3 />CASGEM Groundwater Basin Prioritization</div> 
                           <div class="boundaryLeg"><img src="images/basinPriorityRank.PNG" ></div>
                </div>
-              <div id="tab3" data-dojo-type="dijit/layout/ContentPane" title="Disclaimer" data-dojo-props="selected:true"  >
+              <div id="tab3" data-dojo-type="dijit/layout/ContentPane" title="Disclaimer"  data-dojo-props="selected:true"  >
             		
                    
                     	<h3 id="disclaimerHeadings"  align="center">CONDITIONS OF USE</h3>

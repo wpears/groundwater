@@ -195,6 +195,7 @@ body{
 
 
 #tabContainer{
+	font-size:15px;
 	height:90%;
 	width:100%;
 	background-color:transparent;
@@ -210,6 +211,8 @@ body{
 	
 }
 .levelMeasurementHeadings{
+	font-size:13px;
+	font:bold;
 	margin-bottom:4px;
 	margin-top:20px;
 }
