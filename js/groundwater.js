@@ -92,9 +92,9 @@ esri.config.defaults.io.corsDetection = false;
   ready(function() {
     var W = window;
     var DOC = document;
-    var server = "darcgis.water.ca.gov"
+    var server = "darcgis.water.ca.gov";
     var layers = [];
-    var mapPane = dom.byId("centerPane")
+    var mapPane = dom.byId("centerPane");
     var svgLayer;
     var movers = query(".mov");
     var rp = dom.byId('rp');
