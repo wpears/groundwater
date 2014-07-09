@@ -810,8 +810,8 @@ infoWindow.on('hide',function(){
       wasDouble = 0;
 
     lastClick = now;
-
-    if(e.target === svgLayer)
+    console.log(e.target,svgLayer,e)
+    if(e.target === svgLayer||e.target.id.slice(0,10) ==="centerPane")
       notMap = 0;
     else
       notMap = 1;
@@ -825,17 +825,22 @@ infoWindow.on('hide',function(){
   });
 
   on(mapPane,"mouseup",function(e){
+    console.log("MOUSING UP")
+    console.log(notMap)
     if (notMap) return;
-
+console.log("hihihihi")
     if(wasDouble){
       return wasDouble = 0;
     }
-
+console.log("hi")
     if(Math.abs(e.clientX-mdX)<10&&Math.abs(e.clientY-mdY)<10){
 
       addEventCoordinates(e);
+      console.log('add')
       runIdentify(e);
+      console.log("ran")
       setInfoPoint(e);
+      console.log("set")
     }
   })
 
