@@ -84,24 +84,28 @@
 
             <div id="pane2" data-dojo-type="dijit/layout/AccordionPane" title="Base of Fresh Groundwater (BFGW)">
               <div class="firstServiceWrapper">
-                <input type='checkbox' class="checkBox" id='layerB0CheckBox' value=0/>CA DOGGR Data
+                <input type='checkbox' class="checkBox" id='layerB0CheckBox' value=0/>
+                <label for="layerB0CheckBox">CA DOGGR Data</label>
               </div>
               <div class="legendWrapper">
                 <img src="images/CA_DOGGER.PNG"></img>
               </div>
               <div class="serviceWrapper">
-                <input type='checkbox' class="checkBox" id='layerB1CheckBox' value=1/>Water Resource Data
+                <input type='checkbox' class="checkBox" id='layerB1CheckBox' value=1/>
+                <label for="layerB1CheckBox">Water Resource Data</label>
               </div>                                    
               <div class="legendWrapper">
                 <img src="images/WR_Data.PNG"></img>
               </div>
               <div class="serviceWrapper">
-                <input type='checkbox'  class="checkBox" id='layerB2CheckBox' value=2 /> BFGW - Below Ground Surface (ft)
+                <input type='checkbox'  class="checkBox" id='layerB2CheckBox' value=2 />
+                <label for="layerB2CheckBox">BFGW - Below Ground Surface (ft)</label>
               </div>                                                                                         <div class="legendWrapper">
                 <img src="images/Elev_BFG_BGS.PNG"></img>
               </div>
               <div class="serviceWrapper">
-                <input type='checkbox' class="checkBox" id='layerB5CheckBox' value=5 />BFGW - Elevation (ft)
+                <input type='checkbox' class="checkBox" id='layerB5CheckBox' value=5/>
+                <label for="layerB5CheckBox">BFGW - Elevation (ft)</label>
               </div>                                                                                         <div class="legendWrapper">
                 <img src="images/Elev_BFg_MSL.PNG"></img>
               </div>
@@ -196,25 +200,29 @@
         <!--Tab 2-->
         <div id="tab2" data-dojo-type="dijit/layout/ContentPane" title="Boundaries"  data-dojo-props="selected:true">
           <div class="firstServiceWrapper">
-            <input type='checkbox' class="checkBox" id='layer0CheckBox' value=0 />County Boundaries
+            <input type='checkbox' class="checkBox" id='layer0CheckBox' value=0/>
+            <label for="layer0CheckBox">County Boundaries</label>
           </div>                                    
           <div class="legendWrapper">
             <img src="images/countyBoundary_Leg.PNG">
           </div>
           <div class="serviceWrapper">
-            <input type='checkbox' class="checkBox" id='layer1CheckBox' value=1 />Bulletin 118 Groundwater Basins/Sub-Basins
+            <input type='checkbox' class="checkBox" id='layer1CheckBox' value=1/>
+            <label for="layer1CheckBox">Bulletin 118 Groundwater Basins/Sub-Basins</label>
           </div>                                           
           <div class="legendWrapper">
             <img src="images/Bulletin118GWbasins.PNG">
           </div>
           <div class="serviceWrapper">
-            <input type='checkbox' class="checkBox" id='layer2CheckBox' value=2 />Groundwater Management Plans
+            <input type='checkbox' class="checkBox" id='layer2CheckBox' value=2/>
+            <label for="layer2CheckBox">Groundwater Management Plans</label>
           </div>                                           
           <div class="legendWrapper">
             <img src="images/GWMP_Statewide.PNG" >
           </div>
           <div class="serviceWrapper">
-            <input type='checkbox' class="checkBox" id='layer3CheckBox' value=3/>CASGEM Groundwater Basin Prioritization
+            <input type='checkbox' class="checkBox" id='layer3CheckBox' value=3/>
+            <label for="layer3CheckBox">CASGEM Groundwater Basin Prioritization</label>
           </div> 
           <div class="legendWrapper">
             <img src="images/basinPriorityRank.PNG">
@@ -273,7 +281,7 @@
   </div><!-- End  ofborderContainer -->
 
   
-  
+
   <script data-dojo-config="async:1" src="http://js.arcgis.com/3.8/init.js"></script>
   <script async src="js/groundwater.js"></script>
       
