@@ -83,6 +83,7 @@ label:hover,.serviceRadio,.layerCheck{
   font-style:italic;
   text-shadow:1px 1px 0 #4cff4c;
   padding:3px 8px;
+  cursor:pointer;
 }
 
 #closeRP{

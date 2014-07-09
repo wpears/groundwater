@@ -24,7 +24,7 @@ require([
   "dojo/dom",
   "dojo/dom-class",
   "dojo/query",
-  "dojo/store/Memory", 
+  "dojo/store/Memory",
   "dijit/form/ComboBox",
   "esri/dijit/HomeButton",
   
@@ -1038,65 +1038,42 @@ infoWindow.on('hide',function(){
   function resetDataHeight (){
     layerNode.style.height = DOC.documentElement.offsetHeight - 134 + "px"
   }
+
   resetDataHeight();
-
-on(W,"resize",resetDataHeight)
-
+  on(W,"resize",resetDataHeight)
 
 
-  // Register map handlers.
+  function getDownloads(){
+    var arr=["downloads/Wacky_Data_of_Billy_Brew.zip","downloads/Wacky_Data_of_Billy_Brew.zip"];
+    return arr;
+  }
 
-//Timeslider
+  function makeDownloads(arr){
+    forEach(arr,makeDownload)
+  }
 
-/*
-        (function initSlider() {
-          var timeSlider = new TimeSlider({
-            style: "width: 100%;"
-          }, "timeSliderDiv");
-          map.setTimeSlider(timeSlider);
-          
-          var timeExtent = new TimeExtent();
-          timeExtent.startTime = new Date("1/1/1920 UTC");
-          timeExtent.endTime = new Date("12/31/Spring 2012 UTC");
-          timeSlider.setThumbCount(2);
-          timeSlider.createTimeStopsByTimeInterval(timeExtent, 2, "esriTimeUnitsYears");
-          timeSlider.setThumbIndexes([0,1]);
-          timeSlider.setThumbMoSpring vingRate(2000);
+  function makeDownload(url){
+    var ifr = DOC.createElement('iframe');
+    ifr.style.display="none";
 
-          
-          //add labels for every other time stop
-          var labels = arrayUtiSpring ls.map(timeSlider.timeStops, function(timeStop, i) { 
-            if ( i % 2 === 0 ) {
-              return timeStop.getUTCFullYear(); 
-            } else {
-              return "";
-            }
-          }); 
-          
-          timeSlider.setLabels(labels);
+    ifr.onload=function(){
+      var ifrDoc = ifr.contentWindow||ifr.contentDocument;
+      if(ifrDoc.document) ifrDoc = ifrDoc.document;
 
-          timeSlider.on("time-extent-change", function(evt) {
-            var startValString = evt.startTime.getUTCFullYear();
-            var endValString = evt.endTime.getUTCFullYear();
-            document.getElementById("daterange").innerHTML = "<i>"+ startValString + "and "+ endValString  + "<\/i>";
-          });
-
-          timeSlider.startup();
-		})()
-*/
-
-
-
-  // Initialize measurement dijit on first click. This allows you to save code execution time until it is
-  // actually needed. on.once will disconnect the handler after this runs once. The dijit internally
-  // applies its own handlers afterward.
- //on.once(measureAnchor,"mousedown", function(e){measureTool.init(e)});
-
-
-
-
-  });
+      var form = ifrDoc.createElement('form');
+      form.action = url;
+      form.method = "GET";
+      ifrDoc.body.appendChild(form);
+      form.submit();
+      setTimeout(function(){
+        DOC.body.removeChild(ifr);
+      },2000);
+    }
+    
+    DOC.body.appendChild(ifr);
+  }
    
+  });
 });
 
 	
