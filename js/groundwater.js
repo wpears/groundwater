@@ -28,7 +28,6 @@ require([
   "dijit/form/ComboBox",
   "esri/dijit/HomeButton",
   
-  "modules/measuretool.js",
   "esri/symbols/SimpleLineSymbol",
   "esri/symbols/SimpleMarkerSymbol",
   "dijit/layout/BorderContainer",
@@ -70,7 +69,6 @@ function(
    ComboBox,
    HomeButton,
 
-   MeasureTool,
    SimpleLineSymbol,
    SimpleMarkerSymbol,   
    BorderContainer,
@@ -121,9 +119,10 @@ esri.config.defaults.io.corsDetection = false;
     var rampCheck = dom.byId("levelRamp");
     var checks = query("#activeLayers input");
 
-    var pointsLegend = dom.byId("dynamicPointsLegend");
-    var contoursLegend = dom.byId("dynamicContoursLegend");
-    var rampLegend = dom.byId("dynamicRampLegend");
+    var legends = query(".dynamicLegend");
+    var pointsLegend = legends[0];
+    var contoursLegend = legends[1];
+    var rampLegend = legends[2];
 
     var tabContainer;
     var currentAccPane;
@@ -231,9 +230,9 @@ esri.config.defaults.io.corsDetection = false;
 
     function removeLoading(check){
       var p = check.parentNode;
-      var first = p.firstChild;
-      if(first.tagName === 'IMG')
-        p.removeChild(first)
+      var prev = check.previousSibling
+      if(prev&&prev.tagName === 'IMG')
+        p.removeChild(prev)
     }      
 
 
@@ -387,7 +386,7 @@ var spanDijit = registry.byId("selectSpan");
   makeService("https://"+server+"/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", "#tab2");
   makeService("https://"+server+"/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", "#pane2");
   makeService("https://"+server+"/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer","#pane3")
-  makeService("https://"+server+"/arcgis/rest/services/GGI/Estimated_Available_Storage/MapServer","#pane4")
+ // makeService("https://"+server+"/arcgis/rest/services/GGI/Estimated_Available_Storage/MapServer","#pane4")
 
 
   forEach(serviceTypes,function(type){
@@ -446,9 +445,6 @@ var spanDijit = registry.byId("selectSpan");
     for (var i = 0; i < inputCount; i++) {
       if (inputs[i].checked) {
         visibleLayerIds.push(inputs[i].value);
-      //  addLayerInfo(service,i)
-      }else{
-     //   removeLayerInfo(service,i)
       }
     }
     if(visibleLayerIds.length === 1){
@@ -469,30 +465,8 @@ var spanDijit = registry.byId("selectSpan");
   function removeVisibleUrl(url){
     visibleServiceUrls[url] = null;
   }
-         
 
 
-
-
-function addLayerInfo(service,layerId){
-  var info = service.layerInfos[layerId]
-  if(!info||info.rpNode) return;
-
-  var node = DOC.createElement('div');
-  info.rpNode = node;
-  node.innerHTML = info.name;
-  layerNode.appendChild(node);
-}
-
-function removeLayerInfo(service, layerId){
-  var info = service.layerInfos[layerId];
-  if(!info)return
-  var node = info.rpNode;
-  if(!node) return;
-
-  layerNode.removeChild(node);
-  info.rpNode = null;
-}
 
 //Getting layer ID from combobox dropdown selections
 
@@ -587,7 +561,6 @@ function showLayer(serviceName,layerId){
   var service = staticServices[serviceName];
     service.resume();
     service.setVisibleLayers([layerId])
-    //addLayerInfo(service,layerId)
     addVisibleUrl(service.url,service)
 }
 
@@ -596,7 +569,6 @@ function hideLayer(serviceName,layerId){
   if(!service.suspended){
     service.setVisibleLayers(noLayers)
     service.suspend();
-  //  removeLayerInfo(service,layerId)
     removeVisibleUrl(service.url);
   }
 }
@@ -696,6 +668,7 @@ function toggleLoading(check){
   if(check.checked) removeLoading(check);
 }
 
+//attach datapane handlers. Called when dijit is loaded.
 function attachInputHandlers(){
   on(levelComboYr,"change",yearChange)
   on(levelComboSeason,"change",inputQuery)
@@ -711,7 +684,7 @@ function attachInputHandlers(){
 }
 
 
-
+//ie shim
 function forEach(arr,fn){
   for(var i=0;i<arr.length;i++){
     fn(arr[i],i,arr)
@@ -725,29 +698,7 @@ map.addLayers(layers);
 
 
 
-
-
-
-
-/* note: you'll need another button or something to clear layers added to the map.
- * this design falls down a bit in that the layers will need to be manipulated manually by the user.. ie
- * clearing layers and changing which layers are showing requires both clicking check boxes and buttons..
- * when it might be smoother to just turn something on when you click the checkbox, removing the "Get value"
- * button entirely. That's what I'd do in this case. You could then make layers automatically clear
- * when the select input changes values, limiting total viewable points on the map (important for performance)
- */
-
-
-/*builder hooked up
- *
- *
- *
- *
- */
-
-
-  // Add dijits to the application
-
+// Add dijits to the application
 
   // Initialize basemap toggle dijit. The basemap argument is the one to which you will toggle, the string
   // is, like with the Map constructor, an id of an HTML element.
@@ -767,22 +718,7 @@ map.addLayers(layers);
     });
 
 
- 
-  // Measurement widget. This is a wrapper around the API's measurement dijit. Features of the wrapper involve
-  // a tool manager that allows multiple tools to work together and the ability for the measure tool to
-  // prevent map events from firing when measurement is enabled. The anchor is an HTML element when
-  // the button will go, the next argument is the line that the dijit creates, the third is the symbol for points
-  // and line vertices, and the last optional argument is an array that takes a reference to the map
-  // and an array of features that events should be paused on 
-/*    var measureTool = MeasureTool( measureAnchor
-                                 , new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0, 0, 0]), 2)
-                                 , new SimpleMarkerSymbol({"size":6,"color":new Color([0, 0, 0])})
-                                 , { map:map}
-                                 );   						 
 
-*/
- 
- 
  //Tabbed InfoWindow with Identify tool 
  
   var mdX = 0;
@@ -810,7 +746,6 @@ infoWindow.on('hide',function(){
       wasDouble = 0;
 
     lastClick = now;
-    console.log(e.target,svgLayer,e)
     if(e.target === svgLayer||e.target.id.slice(0,10) ==="centerPane")
       notMap = 0;
     else
@@ -825,22 +760,15 @@ infoWindow.on('hide',function(){
   });
 
   on(mapPane,"mouseup",function(e){
-    console.log("MOUSING UP")
-    console.log(notMap)
     if (notMap) return;
-console.log("hihihihi")
     if(wasDouble){
       return wasDouble = 0;
     }
-console.log("hi")
     if(Math.abs(e.clientX-mdX)<10&&Math.abs(e.clientY-mdY)<10){
 
       addEventCoordinates(e);
-      console.log('add')
       runIdentify(e);
-      console.log("ran")
       setInfoPoint(e);
-      console.log("set")
     }
   })
 

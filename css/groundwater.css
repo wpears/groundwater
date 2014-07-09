@@ -55,6 +55,9 @@ label:hover,.serviceRadio,.layerCheck{
   
 }
 
+.noDownload{
+  display:none;
+}
 #downloadNode{
   border-top:2px dashed #45fe99;
   width:85%;
@@ -168,6 +171,9 @@ html, body {
 }
 body{
   visibility:hidden;
+  background-color: #FFF;
+  overflow: hidden;
+  font-family: "Trebuchet MS";
 }
 
 #leftPane{
@@ -212,10 +218,6 @@ body{
 	font-size:10px;
 }
 
-#disclaimerHeadings{
-
-	
-}
 .levelMeasurementHeadings{
 	font-size:13px;
 	font:bold;
@@ -244,8 +246,13 @@ body{
 	margin-bottom:2px;
 	margin-left:15px;
 }
-
-.boundaryLeg{
+.serviceWrapper{
+  margin-top:20px;
+}
+.firstServiceWrapper{
+  margin-top:10px;
+}
+.legendWrapper, .dynamicLegend{
 	margin-left:25px;
 	margin-bottom:2px;
 }
@@ -271,45 +278,6 @@ body{
 	font:Verdana, Geneva, sans-serif;
 }
 
-
-#info1{
-	margin:0 0 0 0;
-	height:50%;
-	width:100%;
-	background-color:#F5F5F5;
-	border:#000;
-}
-
-#info2{
-	margin:0 0 0 0;
-	height:50%;
-	width:100%;
-	background-color:#EBEBEB;	
-}
-
-#info3{
-	margin:0 0 0 0;
-	height:15%;
-	width:100%;
-	background-color:#EEE;	
-}
-
-#Header{
-	font-size:16px;
-	font-weight:bold;
-	text-decoration:none;
-	color:#000040;
-	font:Verdana, Geneva, sans-serif;
-}
-
-
-#expandoPane{
-	font-size:15px;
-	text-shadow:#C36;
-	font-weight:bold;
-	background:#E2F0F1;
-}
-
 #layerDescriptionTitle{
 	font-size:20px;
 	font-weight:bold;
@@ -333,21 +301,6 @@ body{
 	elevation:above;
 }
 
-
-
-#legendDiv{
-	
-}
-
-#timeSliderDiv{
-
-}
-
-body {
-  background-color: #FFF;
-  overflow: hidden;
-  font-family: "Trebuchet MS";
-}
 
 #borderContainer {
   width: 100%;
@@ -393,34 +346,6 @@ body {
 .atop{
    position:absolute;
    z-index:100;
-}
-
-#measureAnchor{
-  top:20px;
-  right:30px;
-  width:20px;
-  height:20px;
-  background-image: url(../images/measure.png);
-  background-position:1px;
-  background-repeat:no-repeat;
-}
-
-#measureAnchor:hover{
-  cursor:pointer;
-}
-
-#measureAnchor:active{
-  background-position:1px 3px;
-}
-
-/*remove measureTool unsightly button outlines*/
-.dijitButtonContents{
-  outline:0;
-}
-
-.activeTool{
-  box-shadow:0 0 16px 6px #99ceff !important;
-         background-color:#99ceff;
 }
 
 #measur{
