@@ -133,6 +133,8 @@ esri.config.defaults.io.corsDetection = false;
     var staticServices = {};
     var visibleServiceUrls = {};
     var identifyTasks = {};
+    var servicesById = {};
+
     var changeSpans;
     var changeYears=[];
     var depthYears=[];
@@ -383,10 +385,10 @@ var spanDijit = registry.byId("selectSpan");
 
 
 
-  makeService("https://"+server+"/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", "#tab2");
-  makeService("https://"+server+"/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", "#pane2");
-  makeService("https://"+server+"/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer","#pane3")
- // makeService("https://"+server+"/arcgis/rest/services/GGI/Estimated_Available_Storage/MapServer","#pane4")
+  makeService("https://"+server+"/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", "tab2");
+  //makeService("https://"+server+"/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", "pane2");
+  //makeService("https://"+server+"/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer","pane3")
+ // makeService("https://"+server+"/arcgis/rest/services/GGI/Estimated_Available_Storage/MapServer","pane4")
 
 
   forEach(serviceTypes,function(type){
@@ -430,8 +432,9 @@ var spanDijit = registry.byId("selectSpan");
     service.suspend();
     layers.push(service);
     identifyTasks[url] = new IdentifyTask(url);
-    on(query(id+" input"), "click", function(){updateLayerVisibility(service,this.parentNode.parentNode)});
-    service.on("load",function(e){serviceDescriptions[id.slice(1)] = e.layer.description})
+    servicesById[id] = service;
+    on(query("#"+id+" input"), "click", function(){updateLayerVisibility(service,this.parentNode.parentNode)});
+    service.on("load",function(e){serviceDescriptions[id] = e.layer.description})
   }
 
 
@@ -479,6 +482,13 @@ function getLayerId(type,key){
            : ''
            ;
   return matchLayer(layerInfos,season,year,span);
+}
+
+function getLayerName(type,key){
+  var layerInfos = staticServices[key].layerInfos;
+  var id = getLayerId(type,key);
+  if(layerInfos[id])
+    return layerInfos[id].name
 }
 
 function matchLayer(layerInfos,season,year,span){
@@ -602,11 +612,22 @@ function getCheckedServices(){
   });
 }
 
+function getFilteredServices(checkedArray){
+  var arr=[];
+  forEach(checkedArray,function(checked,i){
+    if(checked){
+      arr.push(serviceNames[serviceNames.length-i-1])
+    }
+  })
+  return arr;
+}
+
 function getServicesFromChecks(checkedArray){
   return checkedArray.map(function(checked,i){
         return serviceNames[serviceNames.length-i-1]
     })
 }
+
 
 function showLegend(id){
   if(id === "radio1"){
@@ -1039,17 +1060,59 @@ infoWindow.on('hide',function(){
     layerNode.style.height = DOC.documentElement.offsetHeight - 134 + "px"
   }
 
-  resetDataHeight();
-  on(W,"resize",resetDataHeight)
-
-
-  function getDownloads(){
-    var arr=["downloads/Wacky_Data_of_Billy_Brew.zip","downloads/Wacky_Data_of_Billy_Brew.zip"];
-    return arr;
+  function getDataZips(){
+    var type = getRadio();
+    var services = getFilteredServices(getCheckedServices());
+    var zips = ["downloads/_readme.zip"];
+    forEach(services,function(name,i){
+      var key = type+name;
+      var layerName = getLayerName(type,key);
+      if(layerName)
+        zips.push(makeDataZip(key,layerName));
+    })
+    return zips;
   }
 
+  function makeDataZip(key,layer){
+    return "downloads/GIC_"+key+"_"+layer+".zip";
+  }
+
+  function getServiceZips(id){
+    var service = servicesById[id];
+    var zips = ["downloads/_readme.zip"];
+    for(var i =1, len = service.visibleLayers.length;i<len;i++){
+      zips.push(makeServiceZip(service.layerInfos[service.visibleLayers[i]].name))
+    }
+    return zips
+  }
+
+  function makeServiceZip(name){
+    return "downloads/" + name.split(" ").join("_") + ".zip"
+  }
+
+
+  resetDataHeight();
+  on(W,"resize",resetDataHeight)
+  on(dom.byId("downloadLink"),"click",downloadZips)
+
+  function downloadZips(){
+    var tabId = tabContainer.selectedChildWidget.id;
+    var paneId = accDijit.selectedChildWidget.id;
+    if(tabId==="tab1"){
+      if(paneId==="pane1"){
+        makeDownloads(getDataZips())
+      }else{
+        makeDownloads(getServiceZips(paneId))
+      }
+    }else{
+      makeDownloads(getServiceZips(tabId))
+    }
+  }
+
+
   function makeDownloads(arr){
-    forEach(arr,makeDownload)
+    if(arr.length>1)
+      forEach(arr,makeDownload)
   }
 
   function makeDownload(url){

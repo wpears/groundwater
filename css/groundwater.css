@@ -260,7 +260,8 @@ body{
 
 #pane1{
 	font-size:15px;
-	font:Verdana, Geneva, sans-serif
+	font:Verdana, Geneva, sans-serif;
+  overflow:hidden;
 }
 
 #pane1 >div{
@@ -273,10 +274,6 @@ body{
 #tabContainer .dijitTab{
   width:85px;
   text-align: center;
-}
-#pane4{
-	font-size:15px;
-	font:Verdana, Geneva, sans-serif;
 }
 
 #layerDescriptionTitle{
