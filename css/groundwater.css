@@ -249,9 +249,13 @@ body{
 }
 .serviceWrapper{
   margin-top:20px;
+  font-weight:bolder;
+  font-size:15px;
 }
 .firstServiceWrapper{
   margin-top:10px;
+  font-weight:bolder;
+  font-size:15px;
 }
 .legendWrapper, .dynamicLegend{
 	margin-left:25px;

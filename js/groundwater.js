@@ -176,8 +176,7 @@ esri.config.defaults.io.corsDetection = false;
 	    extent:initialExtent,
       infoWindow:infoWindow,
       minZoom:6,
-	    maxZoom:12,
-	
+	    maxZoom:12
     });
 
 
