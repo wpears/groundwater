@@ -90,7 +90,7 @@ esri.config.defaults.io.corsDetection = false;
   ready(function() {
     var W = window;
     var DOC = document;
-    var server = "darcgis.water.ca.gov";
+    var server = "gis.water.ca.gov";
     var layers = [];
     var mapPane = dom.byId("centerPane");
     var svgLayer;
@@ -105,7 +105,7 @@ esri.config.defaults.io.corsDetection = false;
     var addDijit;
 
     var noLayers = [-1];
-    var prefix = "https://"+server+"/arcgis/rest/services/GGI/GIC_";
+    var prefix = "https://"+server+"/arcgis/rest/services/Public/GIC_";
     var suffix = "/MapServer";
     var serviceTypes = ["Change","Elevation","Depth"];
     var serviceNames = ["_Ramp","_Contours","_Points"];
@@ -384,10 +384,10 @@ var spanDijit = registry.byId("selectSpan");
 
 
 
-  makeService("https://"+server+"/arcgis/rest/services/GGI/GIC_Boundaries/MapServer", "tab2");
-  //makeService("https://"+server+"/arcgis/rest/services/GGI/Sacramento_Valley_BFW_Map/MapServer", "pane2");
-  //makeService("https://"+server+"/arcgis/rest/services/GGI/Summary_Potential_Subsidence/MapServer","pane3")
- // makeService("https://"+server+"/arcgis/rest/services/GGI/Estimated_Available_Storage/MapServer","pane4")
+  makeService("https://"+server+"/arcgis/rest/services/Public/GIC_Boundaries/MapServer", "tab2");
+  //makeService("https://"+server+"/arcgis/rest/services/Public/Sacramento_Valley_BFW_Map/MapServer", "pane2");
+  //makeService("https://"+server+"/arcgis/rest/services/Public/Summary_Potential_Subsidence/MapServer","pane3")
+ // makeService("https://"+server+"/arcgis/rest/services/Public/Estimated_Available_Storage/MapServer","pane4")
 
 
   forEach(serviceTypes,function(type){
