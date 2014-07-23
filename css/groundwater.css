@@ -171,7 +171,6 @@ html, body {
   padding: 0;
 }
 body{
-  visibility:hidden;
   background-color: #FFF;
   overflow: hidden;
   font-family: "Trebuchet MS";
@@ -305,6 +304,7 @@ body{
 
 
 #borderContainer {
+  visibility:hidden;
   width: 100%;
   height: 100%;
 }
