@@ -182,7 +182,7 @@ esri.config.defaults.io.corsDetection = false;
 
             
 	var home= new HomeButton({
-	  map: map,
+	  map: map
 	}, "homeButton");
 	home.startup();
     
