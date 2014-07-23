@@ -350,15 +350,11 @@ body{
    z-index:100;
 }
 
-#measur{
-  display:none;
-  background-color:rgba(245,245,245,0.8);
-  width:214px;
-  height:120px;
-  top:66px;
-  right:8px;
-  border-radius: 6px;
-  border:1px solid;
-  box-shadow:0px 2px 2px -1px #a5b6e0;
+noscript > div{
+  position:absolute;
+  top:5px;
+  left:5px;
 }
+
+
 
