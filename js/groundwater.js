@@ -1010,7 +1010,7 @@ infoWindow.on('hide',function(){
     on(tabContainer.domNode,".dijitTab:click",tabClick)
 
     populateFromTab();
-    DOC.body.style.visibility="visible";
+    dom.byId("borderContainer").style.visibility="visible";
 
     W.setTimeout(function(){
       on.emit(dom.byId("pane1_button"),"click",{bubbles:true,cancelable:true});
