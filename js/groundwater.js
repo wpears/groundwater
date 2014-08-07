@@ -150,12 +150,12 @@ esri.config.defaults.io.corsDetection = false;
   // Choose your initial extent. The easiest way to find this is to pan around the map, checking the
   // current extent with 'esri.map.extent' in the Javascript console (F12 to open it)
     var initialExtent = new Extent({
-	  xmin : -13300000,
-      ymin : 3500000,
-      xmax : -12800000,
-      ymax : 5500000, 
-	  spatialReference:{
-        wkid : 102100
+	    "xmin" : -13300000,
+      "ymin" : 3500000,
+      "xmax" : -12800000,
+      "ymax" : 5500000, 
+	    "spatialReference":{
+        "wkid" : 102100
       }
     });
 
@@ -181,7 +181,6 @@ esri.config.defaults.io.corsDetection = false;
     });
 
 
-            
 	var home= new HomeButton({
 	  map: map
 	}, "homeButton");
@@ -191,8 +190,8 @@ esri.config.defaults.io.corsDetection = false;
 	
   //Once the map is loaded, set the infoWindow's size. And turn in off and on to prevent a flash of
   //unstyled content on the first point click. This is a bug in the API.
-  
-      map.on("load", function(){
+
+    map.on("load", function(){
       map.disableDoubleClickZoom();
       svgLayer = dom.byId("centerPane_gc")
       infoWindow.resize(425,325);
@@ -404,6 +403,9 @@ var spanDijit = registry.byId("selectSpan");
       layer.on('load',function(evt){initializeLayers(evt.layer,type,name)});
     })
   })
+
+  // Add active layers to map
+  map.addLayers(layers);
 
 
   function initializeLayers(layer,type,name){
@@ -713,8 +715,6 @@ function forEach(arr,fn){
 }
 
 
-// Add layers to map
-map.addLayers(layers);
 
 
 
@@ -1135,7 +1135,7 @@ infoWindow.on('hide',function(){
     
     DOC.body.appendChild(ifr);
   }
-   
+
   });
 });
 
