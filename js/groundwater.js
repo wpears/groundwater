@@ -91,7 +91,7 @@ esri.config.defaults.io.corsDetection = false;
     var W = window;
     var DOC = document;
     var server = DOC.location.host;
-    var serverFolder = server.slice(3) === "gis" ? "Public" : "GGI";
+    var serverFolder = server.slice(0,3) === "gis" ? "Public" : "GGI";
     var layers = [];
     var mapPane = dom.byId("centerPane");
     var svgLayer;
@@ -1010,7 +1010,7 @@ infoWindow.on('hide',function(){
     on(tabContainer.domNode,".dijitTab:click",tabClick)
 
     populateFromTab();
-    dom.byId("borderContainer").style.visibility="visible";
+    DOC.body.style.visibility="visible";
 
     W.setTimeout(function(){
       on.emit(dom.byId("pane1_button"),"click",{bubbles:true,cancelable:true});
