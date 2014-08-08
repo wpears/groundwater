@@ -389,6 +389,10 @@ label:hover,.serviceRadio,.layerCheck{
   background:url(../images/x.png);
   top:2px;
   cursor:pointer;
+  opacity:0.8;
+}
+.hide:hover{
+  opacity:1;
 }
 .hide > div{
   display:none !important;

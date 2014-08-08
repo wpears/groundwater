@@ -747,6 +747,7 @@ function forEach(arr,fn){
       function setBasemap(bmap,next){
         basemapPic.src = src + next + ".jpg";
         basemapLabel.textContent = next[0].toUpperCase() + next.slice(1);
+        if(map.getBasemap()===bmap) return;
         map.setBasemap(bmap);
       }
 
