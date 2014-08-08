@@ -1,11 +1,3 @@
-label:hover,.serviceRadio,.layerCheck{
-  cursor:pointer;
-}
-.loadingImg{
-  width:16px;
-  height:16px;
-  margin:0 -18px 0 2px;
-}
 
 #centerPane{
   height: 100%;
@@ -360,4 +352,23 @@ noscript > div{
 }
 
 
+label:hover,.serviceRadio,.layerCheck{
+  cursor:pointer;
+}
 
+.loadingImg{
+  width:16px;
+  height:16px;
+  margin:0 -18px 0 2px;
+}
+
+.hide{
+  width:16px !important;
+  height:16px !important;
+  background:url(../images/x.png);
+  top:2px;
+  cursor:pointer;
+}
+.hide > div{
+  display:none !important;
+}
