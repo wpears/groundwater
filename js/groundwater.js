@@ -1063,7 +1063,7 @@ infoWindow.on('hide',function(){
   function getDataZips(){
     var type = getRadio();
     var services = getFilteredServices(getCheckedServices());
-    var zips = ["downloads/_readme.zip"];
+    var zips = ["downloads/_readme.txt"];
     forEach(services,function(name,i){
       var key = type+name;
       var layerName = getLayerName(type,key);
@@ -1079,7 +1079,7 @@ infoWindow.on('hide',function(){
 
   function getServiceZips(id){
     var service = servicesById[id];
-    var zips = ["downloads/_readme.zip"];
+    var zips = ["downloads/_readme.txt"];
     for(var i =1, len = service.visibleLayers.length;i<len;i++){
       zips.push(makeServiceZip(service.layerInfos[service.visibleLayers[i]].name))
     }
