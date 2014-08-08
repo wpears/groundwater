@@ -197,6 +197,9 @@ esri.config.defaults.io.corsDetection = false;
       infoWindow.resize(425,325);
       infoWindow.show(0,0);
       setTimeout(function(){infoWindow.hide()},0);
+
+      var basemapToggle = toggle();
+      on(dom.byId("basemapNode"),"mousedown",basemapToggle);
     });
 
 
@@ -721,24 +724,42 @@ function forEach(arr,fn){
 
 // Add dijits to the application
 
-  // Initialize basemap toggle dijit. The basemap argument is the one to which you will toggle, the string
-  // is, like with the Map constructor, an id of an HTML element.
-    var toggle = new BasemapToggle({
-      map : map,
-      basemap : "satellite"
-      }, "basemapToggle");
-    toggle.basemaps.osm.label="Street"
-    toggle.startup();
+  //custom basemap toggle
+    function toggle(){
+      var t = "topo";
+      var s = "satellite";
+      var g = "gray";
+      var src = "http://js.arcgis.com/3.10/js/esri/dijit/images/basemaps/"
+      var basemapNode = DOC.createElement('div');
+      var basemapPic = DOC.createElement('img');
+      var labelWrapper = DOC.createElement('div');
+      var basemapLabel = DOC.createElement('span');
 
+      basemapNode.id = "basemapNode";
 
-  // Scalebar dijit. Somewhat limited in design, though alternate designs are available.
-    var dijitScalebar = new Scalebar({
-      map : map,
-      scalebarUnit : "dual",
-      attachTo : "bottom-left"
-    });
+      labelWrapper.appendChild(basemapLabel)
+      basemapNode.appendChild(basemapPic);
+      basemapNode.appendChild(labelWrapper);
 
+      centerPane.appendChild(basemapNode);
+      setBasemap(t,s);
 
+      function setBasemap(bmap,next){
+        basemapPic.src = src + next + ".jpg";
+        basemapLabel.textContent = next[0].toUpperCase() + next.slice(1);
+        map.setBasemap(bmap);
+      }
+
+      return function(){
+        var current = map.getBasemap();
+        current === t
+        ? setBasemap(s,g)
+        : current === s
+          ? setBasemap(g,t)
+          : setBasemap(t,s)
+        ;
+      }
+    }
 
  //Tabbed InfoWindow with Identify tool 
  
