@@ -397,3 +397,12 @@ label:hover,.serviceRadio,.layerCheck{
 .hide > div{
   display:none !important;
 }
+
+.identifyLinkImage{
+  width:500px;
+  height:227px;
+  margin:10px 0 -1px 0;
+  background-position: 0 -420px;
+  background-repeat: no-repeat;
+  background-size:500px, 227px;
+}

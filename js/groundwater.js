@@ -891,6 +891,8 @@ infoWindow.on('hide',function(){
     return{title:title,content:content}
   }
 
+
+
   function getTitle(result,isChange){
     var name = result.layerName;
     var season = name.match(/S|F/);
@@ -904,6 +906,8 @@ infoWindow.on('hide',function(){
     return season+name.match(/\d{4}/)[0]
   }
 
+
+
   function makeContent(attributes,blurb){
     var list = blurb+"<ul>";
     for (var key in attributes){
@@ -916,19 +920,57 @@ infoWindow.on('hide',function(){
     return list;
   }
 
+
+
+  function makeSpaced(name){
+    return name.replace(/_/g," ")
+  }
+
+
+
   function getAttributeHTML(value){
-    var linkReg = /(?:^https?|^ftp):\/\//i;
-    var embeddedImg = /blank\.png/i;
+    var pboLink = /http:\/\/pboshared\.unavco\.org.*/i;
+    var regLink = /(?:^https?|^ftp):\/\//i;
     var hydstraImg = /^<img.*hydstra/i;
-    if(linkReg.test(value))
+
+    if(pboLink.test(value))
+      return makeImage(value);
+    else if(regLink.test(value))
       return '<a target="_blank" href="'+value+'">'+value+'</a>'
-    else if(embeddedImg.test(value))
-      return makeEmbedded(value,1);
     else if(hydstraImg.test(value))
       return makeEmbedded(value,0);
     else
       return value;
   }
+
+
+
+  function makeImage(link){
+    setTimeout(function(){
+      infoWindow.resize(560,420);
+      tabs.resize();
+    },0)
+    var image = '<div class="identifyLinkImage" style="background-image:url('+link+')"></div>';
+    return '<a target="_blank" href="'+link+'">'+image+'</a>'
+  }
+
+
+
+  function makeEmbedded(value){
+    var urlReg = /src=['"](.*?)['"]/;
+    var url = urlReg.exec(value)[1];
+
+    value = value.slice(0,5)+'style="width:512px;height:384px;" '+value.slice(5);
+
+    setTimeout(function(){
+      infoWindow.resize(612,500);
+      tabs.resize();
+    },0)
+
+    return '<a target="_blank" href="'+url+'">'+value+'</a>'
+  }
+
+
 
   function getBlurb(title,isChange,url){
     var type;
@@ -942,42 +984,14 @@ infoWindow.on('hide',function(){
     }
   }
 
+
+
   function setNoData(){
     var tab = new ContentPane({
         content:"<p>No Data</p>",
         title:"No Data"
       })
       tabs.addChild(tab);
-  }
-
-  function makeSpaced(name){
-    return name.replace(/_/g," ")
-  }
-
-  function makeEmbedded(value,backgroundImg){
-    var urlReg;
-    var width;
-    var height;
-    if(backgroundImg){
-      urlReg = /url\((.*?)\)/;
-      width = 600;
-      height = 400;
-    }else{
-      urlReg = /src=['"](.*?)['"]/;
-      width = 612;
-      height = 500;
-    }
-
-    var url = urlReg.exec(value)[1];
-    if(!backgroundImg){
-      value = value.slice(0,5)+'style="width:512px;height:384px;" '+value.slice(5);
-    }
-    setTimeout(function(){
-    infoWindow.resize(width,height);
-    tabs.resize();
-  },0)
-
-    return '<a target="_blank" href="'+url+'">'+value+'</a>'
   }
 
 
@@ -998,6 +1012,8 @@ infoWindow.on('hide',function(){
     }
   }
 
+
+
   function hidePane(){
     var i = 0, j = movers.length;
     showing = 0;
@@ -1015,12 +1031,14 @@ infoWindow.on('hide',function(){
   }
 
 
+
   function closeToggle(){
     if(showing) hidePane();
     else showPane();
   }
 
   on(closeButton,"mousedown", closeToggle);
+
 
 
   function hookRightPane(){
@@ -1040,6 +1058,8 @@ infoWindow.on('hide',function(){
     },300);
   }
 
+
+
   function populateFromTab(){
     var tab = tabContainer.selectedChildWidget;
     if(tab.id === "tab1"){
@@ -1053,6 +1073,8 @@ infoWindow.on('hide',function(){
     }
   }
 
+
+
   function populateFromAcc(pane){
     if(pane.id === "pane1"){
       var type = getRadio();
@@ -1063,6 +1085,8 @@ infoWindow.on('hide',function(){
       layerNode.innerHTML = serviceDescriptions[pane.id]
     }
   }
+
+
 
   function tabClick(e){
       populateFromTab();
