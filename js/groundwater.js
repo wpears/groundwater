@@ -192,8 +192,8 @@ esri.config.defaults.io.corsDetection = false;
     
 	
 	
-  //Once the map is loaded, set the infoWindow's size. And turn in off and on to prevent a flash of
-  //unstyled content on the first point click. This is a bug in the API.
+  //Once the map is loaded, set the infoWindow's size. And turn it off and on to prevent a flash of
+  //unstyled content on the first point click.
 
     map.on("load", function(){
       map.disableDoubleClickZoom();
@@ -206,12 +206,13 @@ esri.config.defaults.io.corsDetection = false;
       on(dom.byId("basemapNode"),"mousedown",basemapToggle);
     });
 
-
-  // Expose the map as part of the esri global object. Useful for debugging and trying out modifications to
-  // the map object directly in the console. This could also be done by creating a variable outside of the
-  // require statement, but it can be dangerous creating too many global variables (especially with common
-  // names), as they can 'collide', leaving you with a variable pointing to the wrong object.
     esri.map = map;
+
+
+    //initialize and hook up geocoder
+    (function(){
+
+    })();
 
 
     var identifyParameters = new IdentifyParameters();

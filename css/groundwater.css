@@ -44,12 +44,12 @@
   margin-left:27px;
   word-wrap:break-word;
   overflow-y:scroll;
-  
 }
 
 .noDownload{
   display:none;
 }
+
 #downloadNode{
   border-top:2px dashed #45fe99;
   width:85%;
@@ -58,9 +58,11 @@
   margin:0px 0px 10px 27px;
   text-align:center;
 }
+
 #downloadLink:active{
   line-height:29px;
 }
+
 #downloadLink:hover{
   box-shadow:0 1px 2px 1px #4cff4c;
 }
@@ -221,12 +223,6 @@ body{
   margin-top:2px;
 }
 
-#homeButton {
-  position: absolute;
-  top: 95px;
-  left: 20px;
-  z-index: 50;
-}
 
 .checkBox{
 	margin-left:5px;
@@ -304,10 +300,21 @@ body{
   height: 100%;
 }
 
+.esriSimpleSlider{
+  top:15px;
+  left:15px;
+}
+
+#homeButton {
+  position: absolute;
+  top: 95px;
+  left: 15px;
+  z-index: 50;
+}
 
 #basemapNode{
-	top:10px;
-	left:70px;
+	bottom:15px;
+	left:15px;
 	position:absolute;
 	z-index: 1;
 	width: 66px;
