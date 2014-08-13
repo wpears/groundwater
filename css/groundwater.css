@@ -178,7 +178,7 @@ html, body {
 body{
   background-color: #FFF;
   overflow: hidden;
-  font-family: "Trebuchet MS";
+  font-family: 'PT Sans', sans-serif;
 }
 
 #leftPane{
