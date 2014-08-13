@@ -186,10 +186,11 @@ esri.config.defaults.io.corsDetection = false;
 	}, "homeButton");
 	home.startup();
     
-	
+
 	
   //Once the map is loaded, set the infoWindow's size. And turn in off and on to prevent a flash of
   //unstyled content on the first point click. This is a bug in the API.
+
 
     map.on("load", function(){
       map.disableDoubleClickZoom();
@@ -203,11 +204,13 @@ esri.config.defaults.io.corsDetection = false;
     });
 
 
+
   // Expose the map as part of the esri global object. Useful for debugging and trying out modifications to
   // the map object directly in the console. This could also be done by creating a variable outside of the
   // require statement, but it can be dangerous creating too many global variables (especially with common
   // names), as they can 'collide', leaving you with a variable pointing to the wrong object.
     esri.map = map;
+
 
 
     var identifyParameters = new IdentifyParameters();
@@ -789,13 +792,16 @@ infoWindow.on('hide',function(){
       wasDouble = 0;
 
     lastClick = now;
+
+    //if the first click wasn't on the map either, don't first double
+    if(wasDouble&&notMap){
+      return;
+    }
+
     if(e.target === svgLayer||e.target.id.slice(0,10) ==="centerPane")
       notMap = 0;
     else
       notMap = 1;
-
-    if(notMap && !wasDouble) //click on non-map elements in the map pane (infowindow, eg)
-      return;
 
     if(wasDouble)
       fireZoom(e);
