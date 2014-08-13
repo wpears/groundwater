@@ -981,7 +981,13 @@ infoWindow.on('hide',function(){
   function makeContent(attributes,blurb){
     var list = blurb+"<ul>";
     for (var key in attributes){
-      if(attributes.hasOwnProperty(key)&&key!=="OBJECTID"&&key!=="Shape"&&key!=="Shape_Area"&&key!=="Shape_Length"){
+      if(attributes.hasOwnProperty(key)
+        &&key!=="OBJECTID"
+        &&key!=="Shape"
+        &&key!=="Shape_Area"
+        &&key!=="Shape_Length"
+        &&key!=="Pixel Value"
+        ){
         var spaced = makeSpaced(key)
         list+= "<li><strong>"+spaced+"</strong>: "+getAttributeHTML(attributes[key])+"</li>"
       }
