@@ -6,6 +6,8 @@ require([
   "esri/map",
   "esri/geometry/Extent",
   "esri/geometry/ScreenPoint",
+  "esri/geometry/Point",
+  "esri/SpatialReference",
   "esri/layers/ArcGISDynamicMapServiceLayer",
   "esri/layers/FeatureLayer",
   "esri/dijit/Scalebar",
@@ -15,8 +17,9 @@ require([
   "esri/TimeExtent", 
   "esri/dijit/TimeSlider",
   "esri/layers/ImageParameters",
-  "dijit/registry",
-  
+  "esri/graphic",
+  "esri/geometry/webMercatorUtils",
+
   "dojo/ready",
   "dojo/_base/Color",
   "dojo/parser",
@@ -28,12 +31,13 @@ require([
   "dijit/form/ComboBox",
   "esri/dijit/HomeButton",
   
-  "esri/symbols/SimpleLineSymbol",
   "esri/symbols/SimpleMarkerSymbol",
+  "esri/symbols/SimpleLineSymbol",
   "dijit/layout/BorderContainer",
   "dijit/layout/ContentPane",
   "dijit/layout/TabContainer",
   "dijit/form/CheckBox",
+  "dijit/registry",
 
   "esri/tasks/identify",
   "esri/tasks/IdentifyTask",
@@ -49,6 +53,8 @@ function(
    Map,
    Extent,
    ScreenPoint,
+   Point,
+   SpatialReference,
    ArcGISDynamicMapServiceLayer,
    FeatureLayer,
    Scalebar,
@@ -58,7 +64,8 @@ function(
    TimeExtent, 
    TimeSlider,
    ImageParameters,
-   registry,
+   Graphic,
+   wmUtils,
 
    ready,
    Color,
@@ -70,13 +77,14 @@ function(
    Memory,
    ComboBox,
    HomeButton,
-
-   SimpleLineSymbol,
-   SimpleMarkerSymbol,   
+  
+   MarkerSymbol,
+   LineSymbol,
    BorderContainer,
    ContentPane,
    TabContainer,
    CheckBox,
+   registry,
 
    identify,
    IdentifyTask,
@@ -211,6 +219,61 @@ esri.config.defaults.io.corsDetection = false;
 
     //initialize and hook up geocoder
     (function(){
+
+      var symbol = new MarkerSymbol(
+        MarkerSymbol.STYLE_CIRCLE
+        , 10
+        , new LineSymbol(LineSymbol.STYLE_SOLID, new Color("#44474d"), 1)
+        , new Color("#041222")
+        );
+
+
+      var wrapper = DOC.createElement('div');
+      var geocoder = DOC.createElement('input');
+
+
+      wrapper.className = 'geocoderWrapper';
+      geocoder.className = 'geocoder';
+
+
+      wrapper.appendChild(geocoder);
+      mapPane.appendChild(wrapper);
+
+
+      on(geocoder,"keyup",function(e){
+        if(e.keyCode === 13){
+          //addLoading(geocoderWrapper);
+          geocode(geocoder.value,parseGeocoder)
+        }
+      });
+
+
+      function parseGeocoder(data){
+        var dataObj = JSON.parse(data);
+        var topResult = dataObj.results[0];
+        var location = topResult.geometry.location;
+        var address = topResult.formatted_address;
+
+        reflectLocationChoice(address)
+        showLocation(location)
+      }
+
+
+      function reflectLocationChoice(address){
+        //removeLoading(geocoderWrapper);
+        return geocoder.value = address;
+      }
+
+
+      function showLocation(location){
+        var loc = wmUtils.lngLatToXY(location.lng,location.lat);
+        var pnt = new Point(loc, new SpatialReference(102100));
+        var graphic = new Graphic(pnt,symbol)
+
+        map.graphics.add(graphic);
+        map.centerAndZoom(pnt,12);
+      }
+
 
     })();
 
