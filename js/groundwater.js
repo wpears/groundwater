@@ -39,6 +39,8 @@ require([
   "esri/tasks/IdentifyTask",
   "esri/tasks/IdentifyParameters",
 
+  "modules/geocode.js",
+
 
   "require"
   ], 
@@ -79,6 +81,9 @@ function(
    identify,
    IdentifyTask,
    IdentifyParameters,
+
+   geocode,
+
    require
    ){
 
@@ -159,7 +164,6 @@ esri.config.defaults.io.corsDetection = false;
       }
     });
 
-	
 	
 
   // Create infoWindow to assign the the map.
