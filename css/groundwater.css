@@ -1,13 +1,19 @@
 .geocoderWrapper{
   position:absolute;
-  top:30px;
+  top:28px;
   left:60px;
   z-index:1;
+  border:2px solid #666;
+  background-color:#fdfeff;
 }
 
 .geocoder{
+  background-color:#fdfeff;
+  border:none;
+  outline:none;
   width:250px;
-  height:30px;
+  height:36px;
+  margin-left:5px;
 }
 
 #centerPane{

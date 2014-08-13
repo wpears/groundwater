@@ -199,7 +199,6 @@ esri.config.defaults.io.corsDetection = false;
 	home.startup();
     
 	
-	
   //Once the map is loaded, set the infoWindow's size. And turn it off and on to prevent a flash of
   //unstyled content on the first point click.
 
@@ -226,6 +225,7 @@ esri.config.defaults.io.corsDetection = false;
         , new LineSymbol(LineSymbol.STYLE_SOLID, new Color("#44474d"), 1)
         , new Color("#041222")
         );
+      var lastGraphic = null;
 
 
       var wrapper = DOC.createElement('div');
@@ -242,6 +242,7 @@ esri.config.defaults.io.corsDetection = false;
 
       on(geocoder,"keyup",function(e){
         if(e.keyCode === 13){
+          clearLastGeocode();
           //addLoading(geocoderWrapper);
           geocode(geocoder.value,parseGeocoder)
         }
@@ -251,11 +252,13 @@ esri.config.defaults.io.corsDetection = false;
       function parseGeocoder(data){
         var dataObj = JSON.parse(data);
         var topResult = dataObj.results[0];
-        var location = topResult.geometry.location;
-        var address = topResult.formatted_address;
+        if(topResult){
+          var location = topResult.geometry.location;
+          var address = topResult.formatted_address;
 
-        reflectLocationChoice(address)
-        showLocation(location)
+          reflectLocationChoice(address)
+          showLocation(location)
+        }
       }
 
 
@@ -268,10 +271,19 @@ esri.config.defaults.io.corsDetection = false;
       function showLocation(location){
         var loc = wmUtils.lngLatToXY(location.lng,location.lat);
         var pnt = new Point(loc, new SpatialReference(102100));
-        var graphic = new Graphic(pnt,symbol)
 
-        map.graphics.add(graphic);
+        lastGraphic = new Graphic(pnt,symbol)
+
+        map.graphics.add(lastGraphic);
         map.centerAndZoom(pnt,12);
+      }
+
+
+      function clearLastGeocode(){
+        if(lastGraphic){
+          map.graphics.remove(lastGraphic);
+          lastGraphic = null;
+        }
       }
 
 
@@ -859,13 +871,16 @@ infoWindow.on('hide',function(){
       wasDouble = 0;
 
     lastClick = now;
+
+    //if the first click wasn't on the map either, don't first double
+    if(wasDouble&&notMap){
+      return;
+    }
+
     if(e.target === svgLayer||e.target.id.slice(0,10) ==="centerPane")
       notMap = 0;
     else
       notMap = 1;
-
-    if(notMap && !wasDouble) //click on non-map elements in the map pane (infowindow, eg)
-      return;
 
     if(wasDouble)
       fireZoom(e);
