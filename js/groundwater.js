@@ -234,16 +234,16 @@ esri.config.defaults.io.corsDetection = false;
 
       wrapper.className = 'geocoderWrapper';
       geocoder.className = 'geocoder';
-
+      geocoder.autofocus = 'autofocus';
 
       wrapper.appendChild(geocoder);
       mapPane.appendChild(wrapper);
 
+      geocoder.tabIndex = "1";
 
       on(geocoder,"keyup",function(e){
         if(e.keyCode === 13){
           clearLastGeocode();
-          //addLoading(geocoderWrapper);
           geocode(geocoder.value,parseGeocoder)
         }
       });
@@ -263,7 +263,6 @@ esri.config.defaults.io.corsDetection = false;
 
 
       function reflectLocationChoice(address){
-        //removeLoading(geocoderWrapper);
         return geocoder.value = address;
       }
 
