@@ -230,13 +230,13 @@ body{
 	font-size:10px;
 }
 
-.levelMeasurementHeadings{
+.paneHeadings{
 	font-size:15px;
 	font:bold;
 	margin-bottom:4px;
 	margin-top:20px;
 }
-.levelMeasurementHeadings:nth-child(1){
+.paneHeadings:nth-child(1){
   margin-top:2px;
 }
 
@@ -364,6 +364,9 @@ body{
 }
 .serviceRadio{
 	margin-left:25px;
+}
+.radioLabel{
+  font-size:15px;
 }
 .poplist{
   list-style-type: none;

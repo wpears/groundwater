@@ -34,7 +34,7 @@
           <div id="pane1" data-dojo-type="dijit/layout/AccordionPane" title="Groundwater Level Measurements">
             
 
-            <h3 class="levelMeasurementHeadings">Data Type:</h3>
+            <h3 class="paneHeadings">Data Type:</h3>
             <form>
       		    <input type="radio"  id="radio1" class= "serviceRadio" name="depthselector">
               <label for="radio1">Depth Below Ground</label><br/>
@@ -45,7 +45,7 @@
             </form>                
 
 
-		        <h3 class="levelMeasurementHeadings" style= "font:bolder">Selection Parameters:</h3>	
+		        <h3 class="paneHeadings" style= "font:bolder">Selection Parameters:</h3>	
             <div align="left" style="padding:0px 0px 6px 5px">
               <span><input id="selectYear" class="combobox">&nbsp;&nbsp;&nbsp;Select Year</span>
             </div>
@@ -58,7 +58,7 @@
             <div style="margin-top:-1px; font-size:9px;">(Change in Groundwater Level Only)</div>
                       
 
-            <h3 class="levelMeasurementHeadings">Show Layers:</h3>            
+            <h3 class="paneHeadings">Show Layers:</h3>            
           		<div class="layer_list" id="activeLayers">
                 <div>
                   <input type='checkbox' class='layerCheck' id='levelMeasurement' value=0 />
@@ -72,7 +72,7 @@
                   <input type='checkbox' class='layerCheck' id='levelRamp' value=2 />
                   <label for=levelRamp> Color Ramp</label>
                 </div>  
-                <h3 class="levelMeasurementHeadings">Legend:</h3>
+                <h3 class="paneHeadings">Legend:</h3>
                 <h4 class="legendTitle">Measurements</h4>
                 <img class="dynamicLegend" src="images/Dynamic_ChangePoints.png">
                 <h4 class="legendTitle">Contours</h4>
@@ -84,29 +84,22 @@
 
 
             <div id="pane2" data-dojo-type="dijit/layout/AccordionPane" title="Well Data">
-              <div class="firstServiceWrapper">
-                <input type='checkbox' class="checkBox" id='avdepth' value=4 />
+              <div class="serviceWrapper">
+                <input type='checkbox' class="checkBox" id='avdepth' value=3 />
                 <label for="avdepth">Average Depth (ft)</label>
               </div>
               <!--div class="legendWrapper">
                 <img src="images/CA_DOGGER.PNG"></img>
               </div-->
               <div class="serviceWrapper">
-                <input type='checkbox' class="checkBox" id='wellcount' value=1 />
-                <label for="wellcount">Well Count</label>
-              </div>                                    
-              <!--div class="legendWrapper">
-                <img src="images/WR_Data.PNG"></img>
-              </div-->
-              <div class="serviceWrapper">
-                <input type='checkbox'  class="checkBox" id='mindepth' value=2 />
+                <input type='checkbox'  class="checkBox" id='mindepth' value=1 />
                 <label for="mindepth">Minimum Depth (ft)</label>
               </div>
               <!--div class="legendWrapper">
                 <img src="images/Elev_BFG_BGS.PNG"></img>
               </div-->
               <div class="serviceWrapper">
-                <input type='checkbox' class="checkBox" id='maxdepth' value=3 />
+                <input type='checkbox' class="checkBox" id='maxdepth' value=2 />
                 <label for="maxdepth">Maximum Depth (ft)</label>
               </div>
               <!--div class="legendWrapper">
@@ -114,7 +107,7 @@
               </div-->
               <div class="serviceWrapper">
                 <input type='checkbox' class="checkBox" id='wellcountpoly' value=0 />
-                <label for="wellcountpoly">Well Count Polygons</label>
+                <label for="wellcountpoly">Well Count and Summary</label>
               </div>
               <!--div class="legendWrapper">
                 <img src="images/Elev_BFg_MSL.PNG"></img>
