@@ -1305,7 +1305,7 @@ infoWindow.on('hide',function(){
   function getServiceZips(id,radio){
     if(radio){
       radio.forEach(function(v){
-        if(v.checked) id += v.id;
+        if(v.checked) id = v.id;
       })
     }
     var service = servicesById[id];
@@ -1333,7 +1333,7 @@ infoWindow.on('hide',function(){
         makeDownloads(getDataZips())
       }else{
         if(paneId==="pane2"){
-          makeDownloads(getServiceZips(paneId,query("input[type='radio']",accDijit.selectedChildWidget)))
+          makeDownloads(getServiceZips(paneId,query("input[type='radio']",accDijit.selectedChildWidget.domNode)))
         }else{
           makeDownloads(getServiceZips(paneId))
         }
