@@ -113,8 +113,9 @@ esri.config.defaults.io.corsDetection = false;
     var tabNode = dom.byId('tabNode');
     var layerNode = dom.byId('layerNode');
     var closeButton = dom.byId('closeRP');
-    var arro = dom.byId("arro");
-    var showing = 0;
+
+    var closeToggle;
+
     var oldIE =(DOC.all&&!W.atob)?true:false;
     var addDijit;
 
@@ -1174,46 +1175,50 @@ infoWindow.on('hide',function(){
 
 
 
-  function showPane(){
-    var i = 0, j = movers.length;
-    showing = 1;
-    arro.style.backgroundPosition = "-32px -16px";
-    if(oldIE){
-      for(;i<j;i++){
+
+  var closeToggle = function(){
+    var showing = 0;
+    var arro = dom.byId("arro");
+
+    function showPane(){
+      var i = 0, j = movers.length;
+      showing = 1;
+      arro.style.backgroundPosition = "-32px -16px";
+      if(oldIE){
+        for(;i<j;i++){
+          if(movers[i] === rp)
+            fx.animateProperty({node:movers[i], duration:300, properties:{marginRight:0}}).play();
+          else fx.animateProperty({node:movers[i], duration:300, properties:{marginRight:285}}).play();
+        }
+      }else{
+        for(;i<j;i++)
+          domClass.add(movers[i],"movd");
+      }
+    }
+
+
+
+    function hidePane(){
+      var i = 0, j = movers.length;
+      showing = 0;
+      arro.style.backgroundPosition = "-96px -16px";
+      if(oldIE){
+        for(;i<j;i++){
         if(movers[i] === rp)
-          fx.animateProperty({node:movers[i], duration:300, properties:{marginRight:0}}).play();
-        else fx.animateProperty({node:movers[i], duration:300, properties:{marginRight:285}}).play();
+          fx.animateProperty({node:movers[i], duration:250, properties:{marginRight:-285}}).play();
+        else fx.animateProperty({node:movers[i], duration:250, properties:{marginRight:0}}).play();
+        }
+      }else{
+        for(;i<j;i++)
+          domClass.remove(movers[i],"movd");
       }
-    }else{
-      for(;i<j;i++)
-        domClass.add(movers[i],"movd");
     }
-  }
 
-
-
-  function hidePane(){
-    var i = 0, j = movers.length;
-    showing = 0;
-    arro.style.backgroundPosition = "-96px -16px";
-    if(oldIE){
-      for(;i<j;i++){
-      if(movers[i] === rp)
-        fx.animateProperty({node:movers[i], duration:250, properties:{marginRight:-285}}).play();
-      else fx.animateProperty({node:movers[i], duration:250, properties:{marginRight:0}}).play();
-      }
-    }else{
-      for(;i<j;i++)
-        domClass.remove(movers[i],"movd");
+    return function(){
+      if(showing) hidePane();
+      else showPane();
     }
-  }
-
-
-
-  function closeToggle(){
-    if(showing) hidePane();
-    else showPane();
-  }
+  }();
 
   on(closeButton,"mousedown", closeToggle);
 
