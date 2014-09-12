@@ -23,9 +23,6 @@
   padding:0;
 }
 
-.combobox{
-	padding:10px;
-}
 
 #rp{
   background:#f9feff;
@@ -214,7 +211,6 @@ body{
 	height:90%;
 	width:100%;
 	background-color:transparent;
-	font:Verdana, Geneva, sans-serif;
 }
 
 
@@ -223,7 +219,6 @@ body{
 	height:90%;
 	width:100%;
 	background-color:transparent;
-	font:Verdana, Geneva, sans-serif;
 	
 }
 #tab3{
@@ -287,29 +282,6 @@ body{
   text-align: center;
 }
 
-#layerDescriptionTitle{
-	font-size:20px;
-	font-weight:bold;
-	text-decoration:none;
-	color:#00F;
-	font:Verdana, Geneva, sans-serif;
-	
-}	
-
-#layerDescription{
-	font-size:14px;
-	text-decoration:none;
-	color:#00F;
-	font:Verdana, Geneva, sans-serif;
-	
-}
-
-.a11yNode{ 
-	background-color:#E8E8E8;
-	border:ridge;
-	elevation:above;
-}
-
 
 #borderContainer {
   visibility:hidden;
@@ -317,10 +289,6 @@ body{
   height: 100%;
 }
 
-.esriSimpleSlider{
-  top:15px;
-  left:15px;
-}
 
 #homeButton {
   position: absolute;
