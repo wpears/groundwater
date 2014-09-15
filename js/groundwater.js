@@ -9,13 +9,9 @@ require([
   "esri/geometry/Point",
   "esri/SpatialReference",
   "esri/layers/ArcGISDynamicMapServiceLayer",
-  "esri/layers/FeatureLayer",
   "esri/dijit/Scalebar",
   "esri/dijit/BasemapToggle",
   "esri/dijit/InfoWindow",
-  "esri/dijit/Legend",
-  "esri/TimeExtent", 
-  "esri/dijit/TimeSlider",
   "esri/layers/ImageParameters",
   "esri/graphic",
   "esri/geometry/webMercatorUtils",
@@ -36,7 +32,6 @@ require([
   "dijit/layout/BorderContainer",
   "dijit/layout/ContentPane",
   "dijit/layout/TabContainer",
-  "dijit/form/CheckBox",
   "dijit/registry",
 
   "esri/tasks/identify",
@@ -56,13 +51,9 @@ function(
    Point,
    SpatialReference,
    ArcGISDynamicMapServiceLayer,
-   FeatureLayer,
    Scalebar,
    BasemapToggle,
    InfoWindow,
-   Legend,
-   TimeExtent, 
-   TimeSlider,
    ImageParameters,
    Graphic,
    wmUtils,
@@ -83,7 +74,6 @@ function(
    BorderContainer,
    ContentPane,
    TabContainer,
-   CheckBox,
    registry,
 
    identify,
@@ -188,23 +178,21 @@ esri.config.defaults.io.corsDetection = false;
 	var map = new Map(mapPane, {
       basemap : "topo",
 	    extent:initialExtent,
-      infoWindow:infoWindow,
       minZoom:6,
 	    maxZoom:12
     });
-  console.log("sr after map creation",map.spatialReference)
+
 
 	var home= new HomeButton({
 	  map: map
 	}, "homeButton");
 	home.startup();
     
-	
+	map.setInfoWindow(infoWindow)
   //Once the map is loaded, set the infoWindow's size. And turn it off and on to prevent a flash of
   //unstyled content on the first point click.
 
     map.on("load", function(){
-      console.log("loaded",map.spatialReference)
       map.disableDoubleClickZoom();
       svgLayer = dom.byId("centerPane_gc")
       infoWindow.resize(425,325);
@@ -1338,7 +1326,7 @@ infoWindow.on('hide',function(){
         makeDownloads(getDataZips())
       }else{
         if(paneId==="pane2"){
-          makeDownloads(getServiceZips(paneId,query("input[type='radio']",accDijit.selectedChildWidget.domNode)))
+          makeDownloads(getServiceZips(paneId,query("input[type='radio']")))
         }else{
           makeDownloads(getServiceZips(paneId))
         }
