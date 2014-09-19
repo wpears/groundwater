@@ -163,7 +163,6 @@ esri.config.defaults.io.corsDetection = false;
       }
     });
 
-	
 
   // Create infoWindow to assign the the map.
   var infoWindow = new InfoWindow('infoWindow');
@@ -235,6 +234,8 @@ esri.config.defaults.io.corsDetection = false;
         if(e.keyCode === 13){
           clearLastGeocode();
           geocode(geocoder.value,parseGeocoder)
+        }else if(e.keyCode === 8 && geocoder.value === ''){
+          clearLastGeocode();
         }
       });
 
@@ -453,7 +454,8 @@ var selectSeason=dom.byId("selectSeason");
 var selectYear = dom.byId("selectYear");
 var selectSpan = dom.byId("selectSpan");
 var spanDijit = registry.byId("selectSpan");
-
+ var obj={};
+ var arr = [];
 
 
   makeService("https://"+server+"/arcgis/rest/services/" + serverFolder + "/GIC_Boundaries/MapServer", "tab2");
@@ -482,12 +484,19 @@ var spanDijit = registry.byId("selectSpan");
       var url = prefix+type+name+suffix;
       var layer = new ArcGISDynamicMapServiceLayer(url,
             {"imageParameters": imageParameters})
+
       layer.on('update-end',layerUpdateEnd);
+
       layer.suspend();
       layers.push(layer)
+
       staticServices[type+name] = layer;
       identifyTasks[url] = new IdentifyTask(url);
-      layer.on('load',function(evt){initializeLayers(evt.layer,type,name)});
+
+      layer.on('load',function(evt){
+        initializeLayers(evt.layer,type,name);
+      });
+
     });
   });
 
