@@ -1,4 +1,20 @@
+.geocoderWrapper{
+  position:absolute;
+  top:30px;
+  left:65px;
+  z-index:1;
+  border:2px solid #666;
+  background-color:#fdfeff;
+}
 
+.geocoder{
+  background-color:#fdfeff;
+  border:none;
+  outline:none;
+  width:250px;
+  height:36px;
+  margin-left:5px;
+}
 
 #centerPane{
   height: 100%;
@@ -307,12 +323,12 @@ body{
 
 
 #basemapNode{
-	top:10px;
-	left:70px;
-	position:absolute;
-	z-index: 1;
-	width: 66px;
-	height: 80px;
+  bottom:15px;
+  left:15px;
+  position:absolute;
+  z-index: 1;
+  width: 66px;
+  height: 80px;
   background-color:#fdfeff;
   border:2px solid #666;
   border-radius: 4px;
@@ -321,8 +337,7 @@ body{
   color:#444;
 }
 #basemapNode > img{
-  margin-left:2px;
-  margin-top:1px;
+  margin:2px;
   border:1px solid #999;
 }
 #basemapNode > div{

@@ -5,15 +5,16 @@
 require([
   "esri/map",
   "esri/geometry/Extent",
+  "esri/SpatialReference",
   "esri/geometry/ScreenPoint",
+  "esri/geometry/Point",
   "esri/layers/ArcGISDynamicMapServiceLayer",
-  "esri/layers/FeatureLayer",
   "esri/dijit/Scalebar",
   "esri/dijit/BasemapToggle",
   "esri/dijit/InfoWindow",
-  "esri/dijit/Legend",
-  "esri/TimeExtent", 
-  "esri/dijit/TimeSlider",
+  "esri/graphic",
+  "esri/geometry/webMercatorUtils",
+
   "esri/layers/ImageParameters",
   "dijit/registry",
   
@@ -33,12 +34,12 @@ require([
   "dijit/layout/BorderContainer",
   "dijit/layout/ContentPane",
   "dijit/layout/TabContainer",
-  "dijit/form/CheckBox",
 
   "esri/tasks/identify",
   "esri/tasks/IdentifyTask",
   "esri/tasks/IdentifyParameters",
 
+  "modules/geocode.js",
 
   "require"
   ], 
@@ -46,15 +47,15 @@ require([
 function(
    Map,
    Extent,
+   SpatialReference,
    ScreenPoint,
+   Point,
    ArcGISDynamicMapServiceLayer,
-   FeatureLayer,
    Scalebar,
    BasemapToggle,
    InfoWindow,
-   Legend,
-   TimeExtent, 
-   TimeSlider,
+   Graphic,
+   wmUtils,
    ImageParameters,
    registry,
 
@@ -69,16 +70,18 @@ function(
    ComboBox,
    HomeButton,
 
-   SimpleLineSymbol,
-   SimpleMarkerSymbol,   
+   LineSymbol,
+   MarkerSymbol,
    BorderContainer,
    ContentPane,
    TabContainer,
-   CheckBox,
 
    identify,
    IdentifyTask,
    IdentifyParameters,
+
+   geocode,
+
    require
    ){
 
@@ -212,6 +215,79 @@ esri.config.defaults.io.corsDetection = false;
   // names), as they can 'collide', leaving you with a variable pointing to the wrong object.
     esri.map = map;
 
+
+  (function(){
+
+    var symbol = new MarkerSymbol(
+      MarkerSymbol.STYLE_CIRCLE
+      , 10
+      , new LineSymbol(LineSymbol.STYLE_SOLID, new Color("#44474d"), 1)
+      , new Color("#041222")
+      );
+    var lastGraphic = null;
+
+
+    var wrapper = DOC.createElement('div');
+    var geocoder = DOC.createElement('input');
+
+
+    wrapper.className = 'geocoderWrapper';
+    geocoder.className = 'geocoder';
+    geocoder.autofocus = 'autofocus';
+
+    wrapper.appendChild(geocoder);
+    mapPane.appendChild(wrapper);
+
+    geocoder.tabIndex = "1";
+
+    on(geocoder,"keyup",function(e){
+      if(e.keyCode === 13){
+        clearLastGeocode();
+        geocode(geocoder.value,parseGeocoder)
+      }else if(e.keyCode === 8 && geocoder.value === ''){
+        clearLastGeocode();
+      }
+    });
+
+
+    function parseGeocoder(data){
+      var dataObj = JSON.parse(data);
+      var topResult = dataObj.results[0];
+      if(topResult){
+        var location = topResult.geometry.location;
+        var address = topResult.formatted_address;
+
+        reflectLocationChoice(address)
+        showLocation(location)
+      }
+    }
+
+
+    function reflectLocationChoice(address){
+      return geocoder.value = address;
+    }
+
+
+    function showLocation(location){
+      var loc = wmUtils.lngLatToXY(location.lng,location.lat);
+      var pnt = new Point(loc, new SpatialReference(102100));
+
+      lastGraphic = new Graphic(pnt,symbol)
+
+      map.graphics.add(lastGraphic);
+      map.centerAndZoom(pnt,12);
+    }
+
+
+    function clearLastGeocode(){
+      if(lastGraphic){
+        map.graphics.remove(lastGraphic);
+        lastGraphic = null;
+      }
+    }
+
+
+  })();
 
 
     var identifyParameters = new IdentifyParameters();
