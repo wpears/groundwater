@@ -469,7 +469,7 @@ var spanDijit = registry.byId("selectSpan");
 
   makeService("https://"+server+"/arcgis/rest/services/" + serverFolder + "/GIC_Boundaries/MapServer", "tab2");
   //makeService("https://"+server+"/arcgis/rest/services/" + serverFolder + "/Sacramento_Valley_BFW_Map/MapServer", "pane2");
-  makeService("https://"+server+"/arcgis/rest/services/" + serverFolder + "/Summary_Potential_Subsidence/MapServer","pane3")
+  makeService("https://"+server+"/arcgis/rest/services/" + serverFolder + "/Subsidence/MapServer","pane3")
  // makeService("https://"+server+"/arcgis/rest/services/" + serverFolder + "/Estimated_Available_Storage/MapServer","pane4")
 
 
