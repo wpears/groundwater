@@ -1270,7 +1270,7 @@ infoWindow.on('hide',function(){
 
   function tabClick(e){
     populateFromTab();
-    resetDataHeight();
+    checkDownload();
   }
 
   function accTabClick(){
@@ -1278,8 +1278,21 @@ infoWindow.on('hide',function(){
     clearAllLayers();
     uncheckLayers(currentAccPane);
     populateFromAcc(pane);
-    resetDataHeight();
     currentAccPane = pane;
+    checkDownload();
+  }
+
+  function checkDownload(){
+    var tab = tabContainer.selectedChildWidget.id;
+    var pane = accDijit.selectedChildWidget.id;
+
+    if(tab === "tab3" || tab === "tab1" && pane !== "pane1"){
+      downloadNode.style.display = "none";
+      layerNode.style.height = DOC.documentElement.offsetHeight - 53 + "px"
+    }else{
+      downloadNode.style.display="block";
+      resetDataHeight();
+    }
   }
 
   function resetDataHeight (){
@@ -1324,7 +1337,7 @@ infoWindow.on('hide',function(){
 
 
   resetDataHeight();
-  on(W,"resize",resetDataHeight)
+  on(W,"resize",checkDownload)
   on(dom.byId("downloadLink"),"click",downloadZips)
 
   function downloadZips(){
