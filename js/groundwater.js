@@ -1192,7 +1192,7 @@ infoWindow.on('hide',function(){
   function checkDownload(){
     var tab = tabContainer.selectedChildWidget.id;
     var pane = accDijit.selectedChildWidget.id;
-    if(tab === "tab1" && pane === "pane3"){
+    if(tab==="tab3"||tab === "tab1" && pane === "pane3"){
       downloadNode.style.display = "none";
       layerNode.style.height = DOC.documentElement.offsetHeight - 53 + "px"
     }else{
