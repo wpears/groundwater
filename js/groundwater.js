@@ -99,6 +99,7 @@ esri.config.defaults.io.corsDetection = false;
     var rp = dom.byId('rp');
     var tabNode = dom.byId('tabNode');
     var layerNode = dom.byId('layerNode');
+    var downloadNode = dom.byId('downloadNode');
     var closeButton = dom.byId('closeRP');
     var arro = dom.byId("arro");
     var showing = 0;
@@ -1095,18 +1096,36 @@ infoWindow.on('hide',function(){
 
 
   function tabClick(e){
-      populateFromTab();
-      resetDataHeight();
+    populateFromTab();
+  //  resetDataHeight();
+    checkDownload();
   }
 
   function accTabClick(){
+    checkDownload();
     var pane = accDijit.selectedChildWidget;
     clearAllLayers();
     uncheckLayers(currentAccPane);
     populateFromAcc(pane);
-    resetDataHeight();
+ //   resetDataHeight();
     currentAccPane = pane;
+    checkDownload();
   }
+
+
+  function checkDownload(){
+    var tab = tabContainer.selectedChildWidget.id;
+    var pane = accDijit.selectedChildWidget.id;
+    console.log(tab,pane)
+    if(tab === "tab1" && pane === "pane3"){
+      downloadNode.style.display = "none";
+      layerNode.style.height = DOC.documentElement.offsetHeight - 53 + "px"
+    }else{
+      downloadNode.style.display="block";
+      resetDataHeight();
+    }
+  }
+
 
   function resetDataHeight (){
     layerNode.style.height = DOC.documentElement.offsetHeight - 134 + "px"
@@ -1144,7 +1163,7 @@ infoWindow.on('hide',function(){
 
 
   resetDataHeight();
-  on(W,"resize",resetDataHeight)
+  on(W,"resize",checkDownload);
   on(dom.byId("downloadLink"),"click",downloadZips)
 
   function downloadZips(){
