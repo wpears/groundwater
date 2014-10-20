@@ -36,11 +36,11 @@
 
             <h3 class="paneHeadings">Select Data Type:</h3>
             <form>
-      		    <input type="radio"  id="radio1" class= "serviceRadio" name="depthselector">
+      		    <input type="radio"  id="radio1" checked class= "serviceRadio" name="depthselector">
               <label for="radio1">Depth Below Ground</label><br/>
-              <input type="radio"  id="radio2" class= "serviceRadio" checked name="depthselector">
+              <input type="radio"  id="radio2" class= "serviceRadio" name="depthselector">
               <label for="radio2">Groundwater Elevation</label><br/>
-              <input type="radio"  id="radio3" class= "serviceRadio" checked name="depthselector">
+              <input type="radio"  id="radio3" class= "serviceRadio" name="depthselector">
               <label for="radio3">Change in Groundwater Level</label>
             </form>                
 
@@ -85,7 +85,7 @@
             </div>
 
 
-            <div id="pane2" data-dojo-type="dijit/layout/AccordionPane" title="Well Data">
+            <div id="pane2" data-dojo-type="dijit/layout/AccordionPane" selected = "true" title="Well Data">
               <div class="serviceWrapper">
                 <input type='checkbox' class="checkBox" id='avdepth' value=3 />
                 <label for="avdepth">Average Depth (ft)</label>
