@@ -199,13 +199,21 @@ body{
 	text-decoration:none;
 	color:#000;
 	font:Verdana, Geneva, sans-serif;
-	
 }
 
 #headingDescrip{
 	font-size:10px;
-	color:#003;
-		
+	color:#003;	
+}
+
+#helplink{
+  position:absolute;
+  top:90px;
+  right:10px;
+  font-size:14px;
+  font-weight:bold;
+  z-index:100;
+
 }
 
 #leftAccordion{
