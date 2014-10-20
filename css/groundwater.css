@@ -241,6 +241,15 @@ body{
 	margin-bottom:15px;
 }
 
+#legendContainer.legendContainer{
+  margin:10px 0 0 0;
+  padding: 10px 0 0 10px;
+}
+
+#legendContainer > h3{
+  margin-left:-10px;
+}
+
 .legendTitle{
 	margin-top:5px;
 	font-size:14px;
