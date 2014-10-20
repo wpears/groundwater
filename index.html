@@ -35,11 +35,11 @@
 
             <h3 class="levelMeasurementHeadings">Select Data Type:</h3>
             <form>
-      		    <input type="radio"  id="radio1" class= "serviceRadio" name="depthselector">
+      		    <input type="radio"  id="radio1" checked class= "serviceRadio" name="depthselector">
               <label for="radio1">Depth Below Ground</label><br/>
-              <input type="radio"  id="radio2" class= "serviceRadio" checked name="depthselector">
+              <input type="radio"  id="radio2" class= "serviceRadio" name="depthselector">
               <label for="radio2">Groundwater Elevation</label><br/>
-              <input type="radio"  id="radio3" class= "serviceRadio" checked name="depthselector">
+              <input type="radio"  id="radio3" class= "serviceRadio" name="depthselector">
               <label for="radio3">Change in Groundwater Level</label>
             </form>                
 
@@ -71,6 +71,8 @@
                   <input type='checkbox' class='layerCheck' id='levelRamp' value=2 />
                   <label for=levelRamp> Color Ramp</label>
                 </div>  
+              </div>
+              <div id="legendContainer" class="legendContainer">
                 <h3 class="levelMeasurementHeadings">Legend:</h3>
                 <h4 class="legendTitle">Measurements</h4>
                 <img class="dynamicLegend" src="images/Dynamic_ChangePoints.png">
@@ -78,7 +80,7 @@
                 <img class="dynamicLegend" src="images/Dynamic_ChangeContours.png">
                 <h4 class="legendTitle">Color Ramp</h4>
                 <img class="dynamicLegend" src="images/Dynamic_ChangeRamp.png">
-              </div>    
+              </div>   
             </div>
 
 
@@ -116,7 +118,7 @@
 
 
 
-            <div id="pane3" data-dojo-type="dijit/layout/AccordionPane" title="Subsidence">
+            <div id="pane3" data-dojo-type="dijit/layout/AccordionPane" selected = "true" title="Subsidence">
               <div class="firstServiceWrapper">
                 <input type='checkbox' id="extensometersCheck" class="checkBox" value=0>
                 <label for="extensometersCheck">Active Extensometers</label>

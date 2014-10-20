@@ -250,6 +250,15 @@ body{
 	margin-bottom:15px;
 }
 
+#legendContainer.legendContainer{
+  margin:10px 0 0 0;
+  padding: 10px 0 0 10px;
+}
+
+#legendContainer > h3{
+  margin-left:-10px;
+}
+
 .legendTitle{
 	margin-top:5px;
 	font-size:14px;
@@ -352,7 +361,7 @@ body{
 }
 
 .layerCheck{
-  margin-left:25px;
+  margin-left:6px;
 }
 .serviceRadio{
 	margin-left:25px;
@@ -396,7 +405,7 @@ label:hover,.serviceRadio,.layerCheck{
 .loadingImg{
   width:16px;
   height:16px;
-  margin:0 -18px 0 2px;
+  margin-left:-16px;
 }
 
 .hide{
